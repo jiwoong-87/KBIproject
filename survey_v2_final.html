@@ -347,25 +347,24 @@ const SESSIONS = [
   {num:10, date:"6.30(화)", topic:"금융회사 이사회 등 지배구조 감독방향", sub:"", speaker:"금융감독원", optional:false}
 ];
 
-/* ─── 저장소 ─── */
+/* ─── 저장소: Google Sheets 전용 ─── */
+/* 캐시는 페이지 내 세션 메모리만 사용 */
 const CACHE = {p:null, r:null, s:null, seat:null, pub:null, act:null};
-const useSheets = () => GAS_URL && GAS_URL.startsWith('https://');
-const lsG = (k,fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch(e){ return fb; } };
-const lsS = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
-function getP()   { return CACHE.p   || []; }
-function getR()   { return CACHE.r   || {}; }
-function getS()   { return CACHE.s   || {currentSession:null, closedSessions:[], adminPw:'1234'}; }
+function getP()   { return CACHE.p    || []; }
+function getR()   { return CACHE.r    || {}; }
+function getS()   { return CACHE.s    || {currentSession:null, closedSessions:[], adminPw:'1234'}; }
 function getSeat(){ return CACHE.seat || {}; }
 function getPub() { return CACHE.pub  || {}; }
 function getAct() { return CACHE.act  || {}; }
 
-function setP(v)   { CACHE.p   = v; lsS('p',v);    if(useSheets()) gas('setParticipants',v); }
-function setR(v)   { CACHE.r   = v; lsS('r',v);    if(useSheets()) gas('setResponses',v); }
-function setS(v)   { CACHE.s   = v; lsS('s',v);    if(useSheets()) gas('setSettings',v); }
-function setSeat(v){ CACHE.seat= v; lsS('seat',v);  if(useSheets()) gas('setSeating',v); }
-function setPub(v) { CACHE.pub = v; lsS('pub',v);   if(useSheets()) gas('setSeatingPublished',v); }
-function setAct(v) { CACHE.act = v; lsS('act',v);   if(useSheets()) gas('setActual',v); }
+/* 쓰기: Sheets에 바로 저장 (await 필수) */
+async function setP(v)   { CACHE.p    = v; await gas('setParticipants',   v); }
+async function setR(v)   { CACHE.r    = v; await gas('setResponses',      v); }
+async function setS(v)   { CACHE.s    = v; await gas('setSettings',       v); }
+async function setSeat(v){ CACHE.seat = v; await gas('setSeating',        v); }
+async function setPub(v) { CACHE.pub  = v; await gas('setSeatingPublished',v); }
+async function setAct(v) { CACHE.act  = v; await gas('setActual',         v); }
 
 async function gas(action, data) {
   try {
@@ -373,45 +372,53 @@ async function gas(action, data) {
     url.searchParams.set('action', action);
     if(data !== undefined) url.searchParams.set('data', JSON.stringify(data));
     const ctrl = new AbortController();
-    const t = setTimeout(()=>ctrl.abort(), 8000);
+    const t = setTimeout(()=>ctrl.abort(), 12000);
     const res = await fetch(url.toString(), {redirect:'follow', signal:ctrl.signal});
     clearTimeout(t);
     return JSON.parse(await res.text());
   } catch(e) { return null; }
 }
 
-async function syncFromSheets() {
+/* 로딩 오버레이 */
+function showLoading(msg='잠시만 기다려 주세요…') {
+  let el = document.getElementById('loadingOverlay');
+  if(!el) {
+    el = document.createElement('div');
+    el.id = 'loadingOverlay';
+    el.style.cssText = 'position:fixed;inset:0;background:rgba(13,31,60,0.88);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:18px;';
+    el.innerHTML = `
+      <div style="width:48px;height:48px;border:3px solid rgba(201,168,76,0.3);border-top-color:#c9a84c;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <div id="loadingMsg" style="color:#fff;font-size:14px;font-weight:500;font-family:'Noto Sans KR',sans-serif;">${msg}</div>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+    document.body.appendChild(el);
+  } else {
+    document.getElementById('loadingMsg').textContent = msg;
+    el.style.display = 'flex';
+  }
+}
+function hideLoading() {
+  const el = document.getElementById('loadingOverlay');
+  if(el) el.style.display = 'none';
+}
+
+/* 페이지 시작: Sheets에서 모든 데이터 로드 */
+async function loadFromSheets() {
+  showLoading('Google Sheets에서 데이터를 불러오는 중…');
   try {
     const [p,r,s,seat,pub,act] = await Promise.all([
       gas('getParticipants'), gas('getResponses'), gas('getSettings'),
       gas('getSeating'), gas('getSeatingPublished'), gas('getActual')
     ]);
-    if(Array.isArray(p)) CACHE.p = p;
-    if(r && !Array.isArray(r)) CACHE.r = r;
-    if(s && !Array.isArray(s)) CACHE.s = s;
-    if(seat && !Array.isArray(seat)) CACHE.seat = seat;
-    if(pub && !Array.isArray(pub)) CACHE.pub = pub;
-    if(act && !Array.isArray(act)) CACHE.act = act;
-    ['p','r','s','seat','pub','act'].forEach(k => { if(CACHE[k]) lsS(k, CACHE[k]); });
-  } catch(e) {}
-}
-
-function loadLocal() {
-  CACHE.p    = lsG('p', []);
-  CACHE.r    = lsG('r', {});
-  CACHE.s    = lsG('s', {currentSession:1, closedSessions:[], adminPw:'1234'});
-  CACHE.seat = lsG('seat', {});
-  CACHE.pub  = lsG('pub', {});
-  CACHE.act  = lsG('act', {});
-  if(!CACHE.p.length) {
-    CACHE.p = [
-      {id:'001', name:'김철수', org:'한국은행', orgType:'사원기관(은행)', phone:'01012341111', key:'1111'},
-      {id:'002', name:'이영희', org:'KB금융지주', orgType:'유관기관(지주)', phone:'01098762222', key:'2222'},
-      {id:'003', name:'박민준', org:'신한카드', orgType:'비사원기관(자회사)', phone:'01055553333', key:'3333'},
-      {id:'004', name:'최지현', org:'우리은행', orgType:'사원기관(은행)', phone:'01077774444', key:'4444'},
-      {id:'005', name:'정도윤', org:'하나금융지주', orgType:'유관기관(지주)', phone:'01022225555', key:'5555'},
-    ];
-    lsS('p', CACHE.p);
+    if(Array.isArray(p))              CACHE.p    = p;
+    if(r && typeof r==='object')      CACHE.r    = r;
+    if(s && typeof s==='object')      CACHE.s    = s;
+    if(seat && typeof seat==='object') CACHE.seat = seat;
+    if(pub && typeof pub==='object')  CACHE.pub  = pub;
+    if(act && typeof act==='object')  CACHE.act  = act;
+  } catch(e) {
+    toast('⚠ 서버 연결 실패. 잠시 후 다시 시도해 주세요.');
+  } finally {
+    hideLoading();
   }
 }
 
@@ -445,7 +452,7 @@ pinInput.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 async function doLogin() {
   const pin = pinInput.value.replace(/\D/g,'');
   if(pin.length < 4) { document.getElementById('loginError').textContent = '4자리를 모두 입력해 주세요.'; return; }
-  if(useSheets()) { try { await syncFromSheets(); } catch(e){} }
+  await loadFromSheets();
   const found = getP().find(p => p.key === pin);
   if(!found) { document.getElementById('loginError').textContent = '일치하는 연수생 정보가 없습니다.'; pinInput.value=''; return; }
   CU = found;
@@ -463,7 +470,7 @@ function goAdminLogin() {
 
 async function confirmAdmin() {
   const pw = document.getElementById('adminPwInput').value;
-  if(useSheets()) { try { await syncFromSheets(); } catch(e){} }
+  await loadFromSheets();
   if(pw === getS().adminPw) {
     document.getElementById('adminPwInput').value = '';
     renderAdmin();
@@ -543,8 +550,11 @@ function setAttend(v) {
   if(s) s.disabled = false;
 }
 
-function saveResp(cn) {
-  const r = getR(); r[CU.id+'_'+cn] = {attend:tmpResp.attend, ts:Date.now()}; setR(r);
+async function saveResp(cn) {
+  showLoading('저장 중…');
+  const r = getR(); r[CU.id+'_'+cn] = {attend:tmpResp.attend, ts:Date.now()};
+  await setR(r);
+  hideLoading();
   toast('회신이 저장되었습니다 ✓'); renderDash();
 }
 
@@ -595,21 +605,26 @@ function renderPList() {
     : ps.map(p=>`<div class="p-row"><div class="p-key">${p.key}</div><div style="flex:1;min-width:0;"><div class="p-name">${p.name}</div><div class="p-detail">${p.org} · ${p.orgType}</div></div><button class="btn-admin sm danger" onclick="delP('${p.id}')">삭제</button></div>`).join('');
 }
 
-function addParticipant() {
+async function addParticipant() {
   const name=document.getElementById('addName').value.trim(), org=document.getElementById('addOrg').value.trim();
   const orgType=document.getElementById('addOrgType').value, phone=document.getElementById('addPhone').value.replace(/\D/g,'');
   if(!name||!org||!phone) { toast('필수 항목을 입력해 주세요'); return; }
   const key=phone.slice(-4), ps=getP();
   if(ps.find(p=>p.key===key)) { toast('같은 번호 뒷자리가 이미 있습니다'); return; }
   ps.push({id:String(Date.now()), name, org, orgType, phone, key});
-  setP(ps);
+  showLoading('저장 중…');
+  await setP(ps);
+  hideLoading();
   ['addName','addOrg','addPhone'].forEach(id => document.getElementById(id).value='');
   renderPList(); toast(name+'님 추가 완료 ✓');
 }
 
 function delP(id) {
-  confirm2('연수생 삭제', '해당 연수생의 모든 데이터가 삭제됩니다. 계속하시겠습니까?', () => {
-    setP(getP().filter(p=>p.id!==id)); renderPList(); toast('삭제되었습니다');
+  confirm2('연수생 삭제', '해당 연수생의 모든 데이터가 삭제됩니다. 계속하시겠습니까?', async () => {
+    showLoading('삭제 중…');
+    await setP(getP().filter(p=>p.id!==id));
+    hideLoading();
+    renderPList(); toast('삭제되었습니다');
   });
 }
 
@@ -623,17 +638,24 @@ function renderSessTiles() {
   }).join('');
 }
 
-function setCurrentSess(num) {
+async function setCurrentSess(num) {
   const ss=getS(); ss.currentSession = ss.currentSession===num ? null : num;
-  setS(ss); renderSessTiles(); toast(ss.currentSession ? `${num}회차 접수 시작` : '접수 마감');
+  showLoading('저장 중…');
+  await setS(ss);
+  hideLoading();
+  renderSessTiles(); toast(ss.currentSession ? `${num}회차 접수 시작` : '접수 마감');
 }
 
 function closeSession() {
   const ss=getS(); if(!ss.currentSession) { toast('열린 회차가 없습니다'); return; }
-  confirm2('접수 마감', `${ss.currentSession}회차 접수를 마감하시겠습니까?`, () => {
+  confirm2('접수 마감', `${ss.currentSession}회차 접수를 마감하시겠습니까?`, async () => {
     if(!ss.closedSessions) ss.closedSessions=[];
     if(!ss.closedSessions.includes(ss.currentSession)) ss.closedSessions.push(ss.currentSession);
-    ss.currentSession=null; setS(ss); renderSessTiles(); toast('마감 처리 완료');
+    ss.currentSession=null;
+    showLoading('저장 중…');
+    await setS(ss);
+    hideLoading();
+    renderSessTiles(); toast('마감 처리 완료');
   });
 }
 
@@ -665,7 +687,13 @@ function togAtt(pid, snum, v) {
   btns[1].className='att-btn'+(tmpAtt[k]===false?' x-on':'');
 }
 
-function saveAtt() { const a=getAct(); Object.assign(a,tmpAtt); setAct(a); toast('출석 저장 완료 ✓'); }
+async function saveAtt() {
+  const a=getAct(); Object.assign(a,tmpAtt);
+  showLoading('저장 중…');
+  await setAct(a);
+  hideLoading();
+  toast('출석 저장 완료 ✓');
+}
 
 /* 테이블 배치 */
 function renderSeatTiles() {
@@ -692,9 +720,12 @@ function renderPubBar(num) {
   btn.style.color=on?'#c0392b':'#e8c97a';
 }
 
-function togglePublish() {
+async function togglePublish() {
   if(!selSeatSess) return;
-  const pub=getPub(); pub[selSeatSess]=!pub[selSeatSess]; setPub(pub);
+  const pub=getPub(); pub[selSeatSess]=!pub[selSeatSess];
+  showLoading('저장 중…');
+  await setPub(pub);
+  hideLoading();
   renderPubBar(selSeatSess); renderSeatTiles();
   toast(pub[selSeatSess]?'연수생에게 공개되었습니다 ✓':'비공개로 변경되었습니다');
 }
@@ -724,10 +755,14 @@ function asgn(snum, table, seat, pid) {
   renderTableGrid(snum);
 }
 
-function saveSeating() {
+async function saveSeating() {
   const seat=getSeat();
   Object.keys(seat).forEach(k => { if(k.startsWith(selSeatSess+'_')) delete seat[k]; });
-  Object.assign(seat, tmpSeat); setSeat(seat); toast('테이블 배치 저장 완료 ✓');
+  Object.assign(seat, tmpSeat);
+  showLoading('저장 중…');
+  await setSeat(seat);
+  hideLoading();
+  toast('테이블 배치 저장 완료 ✓');
 }
 
 /* 응답현황 */
@@ -745,14 +780,16 @@ function renderSummary() {
   }).join('')||`<tr><td colspan="${SESSIONS.length+1}" style="padding:20px;text-align:center;color:#8a9ab0;">데이터 없음</td></tr>`;
 }
 
-/* 비밀번호 변경 */
-function changePw() {
+async function changePw() {
   const cur=document.getElementById('pwCur').value, nw=document.getElementById('pwNew').value, cfm=document.getElementById('pwCfm').value;
   const msg=document.getElementById('pwMsg');
   if(cur!==getS().adminPw) { msg.style.color='#c0392b'; msg.textContent='현재 비밀번호가 올바르지 않습니다.'; return; }
   if(nw.length<4) { msg.style.color='#c0392b'; msg.textContent='새 비밀번호는 4자리 이상이어야 합니다.'; return; }
   if(nw!==cfm) { msg.style.color='#c0392b'; msg.textContent='새 비밀번호가 일치하지 않습니다.'; return; }
-  const s=getS(); s.adminPw=nw; setS(s);
+  const s=getS(); s.adminPw=nw;
+  showLoading('저장 중…');
+  await setS(s);
+  hideLoading();
   ['pwCur','pwNew','pwCfm'].forEach(id=>document.getElementById(id).value='');
   msg.style.color='#2d6a4f'; msg.textContent='✓ 비밀번호가 변경되었습니다.';
   setTimeout(()=>{msg.textContent='';},3000); toast('비밀번호 변경 완료 ✓');
@@ -773,9 +810,7 @@ function closeConfirm() { document.getElementById('confirmOverlay').className='c
 
 /* ─── 시작 ─── */
 window.onerror = function() { return false; };
-loadLocal();
-if(useSheets() && location.protocol !== 'file:') syncFromSheets();
-go('s-login');
+go('s-login'); // 로그인 화면 표시 (데이터는 로그인 버튼 클릭 시 Sheets에서 로드)
 </script>
 </body>
 </html>
