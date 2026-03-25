@@ -81,7 +81,24 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
 .seat-detail { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
 .seat-detail strong { color: #fff; font-size: 15px; }
 
-/* 이력 목록 */
+/* 접혀있는 회신 완료 카드 */
+.replied-card { background: #fdfcfa; border-radius: 14px; border: 1.5px solid #ddd8ce; margin-bottom: 12px; overflow: hidden; transition: box-shadow 0.2s; }
+.replied-card.attend-done { border-color: rgba(45,106,79,0.4); }
+.replied-card.absent-done { border-color: rgba(192,57,43,0.3); }
+.replied-header { padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.replied-header:active { background: rgba(0,0,0,0.03); }
+.replied-info { flex: 1; min-width: 0; }
+.replied-date { font-size: 10px; color: #c9a84c; font-weight: 600; margin-bottom: 2px; }
+.replied-topic { font-size: 13px; font-weight: 600; color: #0d1f3c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.replied-status { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.replied-chip { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 8px; }
+.replied-chip.y { background: rgba(45,106,79,0.1); color: #2d6a4f; }
+.replied-chip.n { background: rgba(192,57,43,0.09); color: #c0392b; }
+.chevron { font-size: 12px; color: #8a9ab0; transition: transform 0.25s; }
+.chevron.open { transform: rotate(180deg); }
+.replied-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.replied-body.open { max-height: 300px; }
+.replied-body-inner { padding: 0 16px 16px; border-top: 1px solid #ddd8ce; padding-top: 14px; }
 .history-item { background: #fdfcfa; border-radius: 12px; border: 1px solid #ddd8ce; margin-bottom: 10px; overflow: hidden; }
 .history-item.attend { border-left: 3px solid #2d6a4f; }
 .history-item.absent { border-left: 3px solid #c0392b; }
@@ -137,6 +154,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
 .sess-topic { font-size: 12px; font-weight: 600; color: #0d1f3c; }
 .badge-open { background: rgba(229,62,62,0.12); color: #c53030; font-size: 10px; padding: 2px 7px; border-radius: 6px; }
 .badge-closed { background: #f0f0f0; color: #888; font-size: 10px; padding: 2px 7px; border-radius: 6px; }
+.badge-waiting { background: rgba(26,50,96,0.08); color: #8a9ab0; font-size: 10px; padding: 2px 7px; border-radius: 6px; }
 .att-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #ddd8ce; gap: 10px; }
 .att-row:last-child { border-bottom: none; }
 .att-name { font-size: 13px; font-weight: 600; color: #0d1f3c; }
@@ -287,8 +305,16 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
     <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">연수생 목록</span><span id="pCount" style="color:rgba(255,255,255,0.5);font-size:11px;">0명</span></div><div id="pList"></div></div>
   </div>
   <div id="t-sessions" class="tab-content">
-    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">접수 회차 설정</span></div><div id="sessTiles"></div></div>
-    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">접수 마감</span></div><div class="admin-card-body"><p style="font-size:12px;color:#4a5568;margin-bottom:12px;">현재 열린 회차의 접수를 마감합니다.</p><button class="btn-admin full danger" onclick="closeSession()">현재 회차 마감하기</button></div></div>
+    <div class="admin-card">
+      <div class="admin-card-head">
+        <span class="admin-card-title">회차별 접수 상태</span>
+        <span style="color:rgba(255,255,255,0.4);font-size:10px;">탭하면 상태 변경</span>
+      </div>
+      <div style="padding:10px 14px 8px;border-bottom:1px solid #ddd8ce;display:flex;gap:12px;">
+        <span style="font-size:11px;color:#8a9ab0;display:flex;align-items:center;gap:4px;"><span class="badge-waiting">대기</span> → <span class="badge-open">접수중</span> → <span class="badge-closed">마감</span> → 반복</span>
+      </div>
+      <div id="sessTiles"></div>
+    </div>
   </div>
   <div id="t-attendance" class="tab-content">
     <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">회차 선택</span></div><div id="attTiles"></div></div>
@@ -562,7 +588,6 @@ function renderSeatNotice() {
 function renderActive() {
   const area = document.getElementById('activeArea');
   const ss = getS();
-  // openSessions 배열 지원 (이전 currentSession 단일값도 호환)
   let openNums = [];
   if(Array.isArray(ss.openSessions)) openNums = ss.openSessions;
   else if(ss.currentSession) openNums = [ss.currentSession];
@@ -577,8 +602,40 @@ function renderActive() {
     const sess = SESSIONS[cn-1];
     if(!sess) return '';
     const rv = r[CU.id+'_'+cn];
-    const resp = rv ? {attend: rv.attend} : {};
-    const yOn = resp.attend===true, nOn = resp.attend===false;
+
+    // ── 이미 회신한 경우: 접힌 카드 ──
+    if(rv && rv.attend !== undefined) {
+      const isAttend = rv.attend === true;
+      const chipTxt = isAttend ? '✓ 참여' : '✗ 불참';
+      const chipCls = isAttend ? 'y' : 'n';
+      const borderCls = isAttend ? 'attend-done' : 'absent-done';
+      return `
+        <div class="replied-card ${borderCls}" id="rc_${cn}">
+          <div class="replied-header" onclick="toggleReplyCard(${cn})">
+            <div class="session-num" style="width:36px;height:36px;font-size:13px;">${cn}</div>
+            <div class="replied-info">
+              <div class="replied-date">${sess.date}${sess.optional?' · 선택':''}</div>
+              <div class="replied-topic">${sess.topic}</div>
+            </div>
+            <div class="replied-status">
+              <span class="replied-chip ${chipCls}">${chipTxt}</span>
+              <span class="chevron" id="chev_${cn}">▼</span>
+            </div>
+          </div>
+          <div class="replied-body" id="rb_${cn}">
+            <div class="replied-body-inner">
+              <div class="sub-label" style="margin-bottom:10px;">회신 수정</div>
+              <div class="attend-btns">
+                <button class="attend-btn ${isAttend?'yes':''}" id="btnY_${cn}" onclick="setAttend(${cn},true)">✓ 참여</button>
+                <button class="attend-btn ${!isAttend?'no':''}" id="btnN_${cn}" onclick="setAttend(${cn},false)">✗ 불참</button>
+              </div>
+              <button class="btn-save" id="btnSave_${cn}" onclick="saveResp(${cn})" style="margin-top:10px;">회신 수정하기</button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    // ── 아직 회신 안 한 경우: 펼쳐진 카드 ──
     return `
       <div class="active-card fadein" style="margin-bottom:12px;">
         <div class="active-card-inner">
@@ -589,13 +646,22 @@ function renderActive() {
           <div class="divider"></div>
           <div class="sub-label">참여 여부를 선택해 주세요</div>
           <div class="attend-btns">
-            <button class="attend-btn ${yOn?'yes':''}" id="btnY_${cn}" onclick="setAttend(${cn},true)">✓ 참여</button>
-            <button class="attend-btn ${nOn?'no':''}" id="btnN_${cn}" onclick="setAttend(${cn},false)">✗ 불참</button>
+            <button class="attend-btn" id="btnY_${cn}" onclick="setAttend(${cn},true)">✓ 참여</button>
+            <button class="attend-btn" id="btnN_${cn}" onclick="setAttend(${cn},false)">✗ 불참</button>
           </div>
-          <button class="btn-save" id="btnSave_${cn}" onclick="saveResp(${cn})" ${resp.attend!==undefined?'':'disabled'}>${rv?'회신 수정하기':'회신 저장하기'}</button>
+          <button class="btn-save" id="btnSave_${cn}" onclick="saveResp(${cn})" disabled>회신 저장하기</button>
         </div>
       </div>`;
   }).join('');
+}
+
+function toggleReplyCard(cn) {
+  const body = document.getElementById('rb_'+cn);
+  const chev = document.getElementById('chev_'+cn);
+  if(!body || !chev) return;
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
 }
 
 function setAttend(cn, v) {
@@ -603,7 +669,6 @@ function setAttend(cn, v) {
   if(y) y.className='attend-btn'+(v?' yes':'');
   if(n) n.className='attend-btn'+(!v?' no':'');
   if(s) s.disabled = false;
-  // tmpResp를 회차별로 관리
   if(!tmpResp) tmpResp = {};
   tmpResp[cn] = {attend: v};
 }
@@ -707,62 +772,69 @@ function delP(id) {
   });
 }
 
-/* 회차 설정 */
+/* 회차 설정 - 대기→접수중→마감→대기 순환 */
+function getSessState(num) {
+  const ss = getS();
+  const openNums = Array.isArray(ss.openSessions) ? ss.openSessions : (ss.currentSession ? [ss.currentSession] : []);
+  if(ss.closedSessions?.includes(num)) return 'closed';
+  if(openNums.includes(num)) return 'open';
+  return 'waiting';
+}
+
 function renderSessTiles() {
-  const ss=getS();
-  // 이전 단일값 호환
-  let openNums = Array.isArray(ss.openSessions) ? ss.openSessions : (ss.currentSession ? [ss.currentSession] : []);
-  document.getElementById('sessTiles').innerHTML = SESSIONS.map(sess=>{
-    const isOpen = openNums.includes(sess.num);
-    const isClosed = ss.closedSessions?.includes(sess.num);
-    const badge = isClosed
-      ? `<span class="badge-closed">마감</span>`
-      : isOpen
-        ? `<span class="badge-open">접수중 ✓</span>`
-        : `<span class="badge-closed">대기</span>`;
-    return `<div class="sess-tile ${isOpen?'sel':''}" onclick="toggleSess(${sess.num})">
-      <div class="sess-num">${sess.num}</div>
-      <div class="sess-info"><div class="sess-date">${sess.date}</div><div class="sess-topic">${sess.topic}</div></div>
-      ${badge}
-    </div>`;
+  document.getElementById('sessTiles').innerHTML = SESSIONS.map(sess => {
+    const state = getSessState(sess.num);
+    const badge = state === 'closed'
+      ? `<span class="badge-closed">마감 ✓</span>`
+      : state === 'open'
+        ? `<span class="badge-open">접수중 ●</span>`
+        : `<span class="badge-waiting">대기</span>`;
+    const bg = state === 'open' ? 'background:rgba(26,50,96,0.05);' : '';
+    return `
+      <div class="sess-tile ${state==='open'?'sel':''}" style="${bg}" onclick="cycleSessState(${sess.num})">
+        <div class="sess-num">${sess.num}</div>
+        <div class="sess-info">
+          <div class="sess-date">${sess.date}</div>
+          <div class="sess-topic">${sess.topic}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;">
+          ${badge}
+          <span style="font-size:14px;color:#c4bfb6;">›</span>
+        </div>
+      </div>`;
   }).join('');
 }
 
-async function toggleSess(num) {
+async function cycleSessState(num) {
   const ss = getS();
   if(!Array.isArray(ss.openSessions)) ss.openSessions = ss.currentSession ? [ss.currentSession] : [];
   if(!ss.closedSessions) ss.closedSessions = [];
-  // 마감된 회차는 다시 열 수 없음
-  if(ss.closedSessions.includes(num)) { toast('이미 마감된 회차입니다'); return; }
-  const idx = ss.openSessions.indexOf(num);
-  if(idx >= 0) {
-    ss.openSessions.splice(idx, 1);
-  } else {
+
+  const cur = getSessState(num);
+  let msg = '';
+
+  if(cur === 'waiting') {
+    // 대기 → 접수중
     ss.openSessions.push(num);
     ss.openSessions.sort((a,b)=>a-b);
+    msg = `${num}회차 접수 시작 ●`;
+  } else if(cur === 'open') {
+    // 접수중 → 마감
+    ss.openSessions = ss.openSessions.filter(n=>n!==num);
+    ss.closedSessions.push(num);
+    msg = `${num}회차 마감 완료 ✓`;
+  } else {
+    // 마감 → 대기 (재설정)
+    ss.closedSessions = ss.closedSessions.filter(n=>n!==num);
+    msg = `${num}회차 대기 상태로 변경`;
   }
-  ss.currentSession = ss.openSessions.length > 0 ? ss.openSessions[0] : null; // 하위 호환
+
+  ss.currentSession = ss.openSessions.length > 0 ? ss.openSessions[0] : null;
   showLoading('저장 중…');
   await setS(ss);
   hideLoading();
   renderSessTiles();
-  toast(idx < 0 ? `${num}회차 접수 시작` : `${num}회차 접수 닫힘`);
-}
-
-function closeSession() {
-  const ss=getS();
-  const openNums = Array.isArray(ss.openSessions) ? ss.openSessions : (ss.currentSession ? [ss.currentSession] : []);
-  if(!openNums.length) { toast('열린 회차가 없습니다'); return; }
-  confirm2('접수 마감', `현재 열린 ${openNums.join(', ')}회차 접수를 모두 마감하시겠습니까?`, async () => {
-    if(!ss.closedSessions) ss.closedSessions=[];
-    openNums.forEach(n => { if(!ss.closedSessions.includes(n)) ss.closedSessions.push(n); });
-    ss.openSessions = [];
-    ss.currentSession = null;
-    showLoading('저장 중…');
-    await setS(ss);
-    hideLoading();
-    renderSessTiles(); toast('마감 처리 완료');
-  });
+  toast(msg);
 }
 
 /* 출석 입력 */
