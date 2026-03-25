@@ -2,2200 +2,780 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>2026 금융회사 사외이사 프로그램</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy: #0d1f3c;
-  --navy-mid: #1a3260;
-  --navy-light: #243f7a;
-  --gold: #c9a84c;
-  --gold-light: #e8c97a;
-  --gold-pale: rgba(201,168,76,0.12);
-  --cream: #f7f4ee;
-  --warm-white: #fdfcfa;
-  --border: #ddd8ce;
-  --border-dark: #c4bfb6;
-  --text-dark: #1a1a2e;
-  --text-mid: #4a5568;
-  --text-light: #8a9ab0;
-  --green: #2d6a4f;
-  --green-bg: rgba(45,106,79,0.1);
-  --red: #c0392b;
-  --red-bg: rgba(192,57,43,0.09);
-  --amber: #b7791f;
-  --amber-bg: rgba(183,121,31,0.1);
-  --radius: 14px;
-  --radius-sm: 9px;
-  --shadow: 0 2px 16px rgba(13,31,60,0.10);
-  --shadow-lg: 0 8px 32px rgba(13,31,60,0.18);
-}
-
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1a2e; max-width: 480px; margin: 0 auto; }
 
-body {
-  font-family: 'Noto Sans KR', sans-serif;
-  background: var(--cream);
-  color: var(--text-dark);
-  min-height: 100vh;
-  max-width: 480px;
-  margin: 0 auto;
-}
-
-/* ============================================================
-   SCREEN SWITCHING
-   ============================================================ */
+/* 화면 전환 - JS가 직접 display 제어하므로 CSS는 최소화 */
 .screen { display: none; }
-.screen.active { display: block; }
 
-/* ============================================================
-   HEADER (shared)
-   ============================================================ */
-.top-bar {
-  background: var(--navy);
-  padding: 18px 20px 16px;
-  position: relative;
-  overflow: hidden;
-}
-.top-bar::after {
-  content: '';
-  position: absolute;
-  top: -50px; right: -30px;
-  width: 160px; height: 160px;
-  border-radius: 50%;
-  background: rgba(201,168,76,0.07);
-  pointer-events: none;
-}
-.top-bar-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 1;
-}
-.top-bar-logo {
-  font-family: 'Noto Serif KR', serif;
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  line-height: 1.3;
-}
-.top-bar-logo span { color: var(--gold-light); }
-.top-bar-sub {
-  color: rgba(255,255,255,0.45);
-  font-size: 10px;
-  margin-top: 2px;
-  font-weight: 300;
-}
-.top-bar-user {
-  text-align: right;
-}
-.user-name-badge {
-  background: rgba(201,168,76,0.18);
-  border: 1px solid rgba(201,168,76,0.35);
-  color: var(--gold-light);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 5px 12px;
-  border-radius: 20px;
-  cursor: pointer;
-}
-.gold-bar {
-  height: 2px;
-  background: linear-gradient(90deg, var(--gold) 0%, rgba(201,168,76,0.1) 100%);
-}
+/* 공통 */
+.gold-bar { height: 3px; background: linear-gradient(90deg, #c9a84c 0%, transparent 100%); }
+.hero { background: #0d1f3c; padding: 44px 28px 36px; position: relative; overflow: hidden; }
+.hero::after { content: ''; position: absolute; top: -50px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: rgba(201,168,76,0.07); pointer-events: none; }
+.badge { display: inline-block; background: rgba(201,168,76,0.12); border: 1px solid rgba(201,168,76,0.35); color: #e8c97a; font-size: 10px; letter-spacing: 0.14em; padding: 4px 11px; border-radius: 20px; margin-bottom: 16px; text-transform: uppercase; font-weight: 500; position: relative; z-index: 1; }
+.hero-title { font-family: 'Noto Serif KR', serif; color: #fff; font-size: 22px; font-weight: 700; line-height: 1.4; margin-bottom: 6px; position: relative; z-index: 1; }
+.hero-desc { color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 300; position: relative; z-index: 1; }
+.body-pad { padding: 28px 20px 48px; }
+.card { background: #fdfcfa; border-radius: 14px; border: 1px solid #ddd8ce; padding: 24px 20px; box-shadow: 0 2px 14px rgba(13,31,60,0.08); }
+.label { font-size: 12px; font-weight: 600; color: #4a5568; margin-bottom: 8px; display: block; }
+.input-field { width: 100%; height: 56px; border: 2px solid #ddd8ce; border-radius: 10px; background: #f7f4ee; font-size: 18px; font-weight: 700; text-align: center; letter-spacing: 12px; outline: none; font-family: 'Noto Serif KR', serif; color: #0d1f3c; transition: border-color 0.2s, box-shadow 0.2s; }
+.input-field:focus { border-color: #1a3260; background: #fff; box-shadow: 0 0 0 3px rgba(26,50,96,0.1); }
+.input-field::placeholder { letter-spacing: 0; font-size: 14px; font-weight: 400; color: #b0b0b0; font-family: 'Noto Sans KR', sans-serif; }
+.btn-primary { width: 100%; padding: 15px; background: #0d1f3c; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; cursor: pointer; margin-top: 4px; transition: opacity 0.15s; }
+.btn-primary:active { opacity: 0.85; }
+.error-msg { color: #c0392b; font-size: 13px; min-height: 20px; text-align: center; margin: 8px 0; }
+.hint { font-size: 12px; color: #8a9ab0; text-align: center; margin-top: 16px; line-height: 1.6; }
+.link-btn { display: block; text-align: center; margin-top: 20px; font-size: 13px; color: #8a9ab0; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 
-/* ============================================================
-   LOGIN SCREEN
-   ============================================================ */
-#loginScreen {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-#loginScreen.active { display: flex; }
+/* 상단 헤더 (대시보드, 관리자) */
+.top-bar { background: #0d1f3c; padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
+.top-bar-title { font-family: 'Noto Serif KR', serif; color: #fff; font-size: 15px; font-weight: 700; }
+.top-bar-title span { color: #e8c97a; }
+.top-bar-sub { color: rgba(255,255,255,0.4); font-size: 10px; margin-top: 2px; }
+.btn-small { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); font-size: 11px; padding: 5px 12px; border-radius: 14px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; white-space: nowrap; }
+.info-strip { background: #1a3260; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+.user-name { font-family: 'Noto Serif KR', serif; color: #fff; font-size: 15px; font-weight: 700; }
+.user-org { color: rgba(255,255,255,0.5); font-size: 11px; margin-top: 2px; }
 
-.login-hero {
-  background: var(--navy);
-  padding: 48px 28px 44px;
-  position: relative;
-  overflow: hidden;
-}
-.login-hero::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -40px;
-  width: 220px; height: 220px;
-  border-radius: 50%;
-  background: rgba(201,168,76,0.07);
-}
-.login-hero::after {
-  content: '';
-  position: absolute;
-  bottom: -30px; left: 20px;
-  width: 130px; height: 130px;
-  border-radius: 50%;
-  background: rgba(201,168,76,0.04);
-}
-.login-badge {
-  display: inline-block;
-  background: var(--gold-pale);
-  border: 1px solid rgba(201,168,76,0.35);
-  color: var(--gold-light);
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  padding: 4px 11px;
-  border-radius: 20px;
-  margin-bottom: 18px;
-  text-transform: uppercase;
-  font-weight: 500;
-  position: relative;
-  z-index: 1;
-}
-.login-title {
-  font-family: 'Noto Serif KR', serif;
-  color: #fff;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 1.4;
-  margin-bottom: 8px;
-  position: relative;
-  z-index: 1;
-}
-.login-desc {
-  color: rgba(255,255,255,0.5);
-  font-size: 13px;
-  font-weight: 300;
-  line-height: 1.6;
-  position: relative;
-  z-index: 1;
-}
-.login-meta {
-  display: flex;
-  gap: 16px;
-  margin-top: 20px;
-  position: relative;
-  z-index: 1;
-}
-.login-meta-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: rgba(255,255,255,0.55);
-  font-size: 11px;
-}
-.login-meta-dot {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: var(--gold);
-  flex-shrink: 0;
-}
-.login-gold-bar {
-  height: 3px;
-  background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
-}
+/* 섹션 레이블 */
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #8a9ab0; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: #ddd8ce; }
+.pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: #e53e3e; box-shadow: 0 0 0 0 rgba(229,62,62,0.4); animation: pulse 1.8s infinite; flex-shrink: 0; }
+@keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(229,62,62,0.4); } 70% { box-shadow: 0 0 0 8px rgba(229,62,62,0); } 100% { box-shadow: 0 0 0 0 rgba(229,62,62,0); } }
 
-.login-body {
-  flex: 1;
-  padding: 32px 24px 40px;
-}
-.login-card {
-  background: var(--warm-white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 28px 24px;
-  box-shadow: var(--shadow);
-}
-.login-card-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-.login-card-desc {
-  font-size: 12px;
-  color: var(--text-mid);
-  margin-bottom: 24px;
-  line-height: 1.6;
-}
-.pin-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-mid);
-  margin-bottom: 10px;
-  display: block;
-}
-.pin-wrap {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
-  position: relative;
-  cursor: text;
-}
-.pin-display {
-  flex: 1;
-  height: 56px;
-  border: 2px solid var(--border);
-  border-radius: 10px;
-  background: var(--cream);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  font-weight: 700;
-  font-family: 'Noto Serif KR', serif;
-  color: var(--navy);
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-  user-select: none;
-}
-.pin-display.active-cursor {
-  border-color: var(--navy-mid);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(26,50,96,0.1);
-}
-.pin-display.filled {
-  background: #fff;
-  border-color: var(--border-dark);
-}
-.pin-hidden {
-  position: absolute;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  top: 0; left: 0;
-  border: none;
-  background: transparent;
-  font-size: 16px;
-  cursor: text;
-  z-index: 2;
-}
-.btn-login {
-  width: 100%;
-  padding: 15px;
-  background: var(--navy);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 15px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-  position: relative;
-  overflow: hidden;
-}
-.btn-login::after {
-  content: '';
-  position: absolute;
-  top: 0; left: -100%;
-  width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(201,168,76,0.18), transparent);
-  transition: left 0.5s;
-}
-.btn-login:hover::after { left: 150%; }
-.btn-login:active { transform: scale(0.98); }
-.login-error {
-  color: var(--red);
-  font-size: 12px;
-  text-align: center;
-  margin-top: 12px;
-  min-height: 18px;
-  font-weight: 500;
-}
-.login-hint {
-  font-size: 11px;
-  color: var(--text-light);
-  text-align: center;
-  margin-top: 18px;
-  line-height: 1.6;
-}
-.admin-link {
-  display: block;
-  text-align: center;
-  margin-top: 24px;
-  font-size: 11px;
-  color: var(--text-light);
-  cursor: pointer;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
+/* 현재 회차 카드 */
+.active-card { background: #fdfcfa; border-radius: 14px; border: 2px solid #1a3260; box-shadow: 0 6px 24px rgba(13,31,60,0.14); overflow: hidden; position: relative; }
+.active-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #1a3260, #c9a84c); }
+.active-card-inner { padding: 18px; }
+.session-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+.session-num { width: 40px; height: 40px; background: #0d1f3c; color: #e8c97a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; font-family: 'Noto Serif KR', serif; flex-shrink: 0; }
+.session-date { font-size: 11px; color: #c9a84c; font-weight: 600; margin-bottom: 3px; }
+.session-topic { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 700; color: #0d1f3c; line-height: 1.4; margin-bottom: 2px; }
+.session-speaker { font-size: 11px; color: #8a9ab0; }
+.divider { height: 1px; background: #ddd8ce; margin: 14px 0; }
+.sub-label { font-size: 11px; font-weight: 600; color: #4a5568; margin-bottom: 9px; }
+.attend-btns { display: flex; gap: 10px; }
+.attend-btn { flex: 1; padding: 12px; border-radius: 10px; border: 1.5px solid #ddd8ce; background: transparent; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; font-weight: 500; color: #4a5568; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.attend-btn.yes { background: rgba(45,106,79,0.1); border-color: #2d6a4f; color: #2d6a4f; font-weight: 700; }
+.attend-btn.no  { background: rgba(192,57,43,0.09); border-color: #c0392b; color: #c0392b; font-weight: 700; }
+.btn-save { width: 100%; margin-top: 12px; padding: 13px; background: linear-gradient(135deg, #0d1f3c, #1a3260); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+.btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
+.no-active { background: #fdfcfa; border: 1px dashed #c4bfb6; border-radius: 14px; padding: 28px 20px; text-align: center; color: #8a9ab0; font-size: 13px; }
 
-/* ============================================================
-   USER DASHBOARD
-   ============================================================ */
-.user-info-strip {
-  background: var(--navy-mid);
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.user-info-left {}
-.user-greeting {
-  color: rgba(255,255,255,0.6);
-  font-size: 11px;
-  font-weight: 300;
-  margin-bottom: 2px;
-}
-.user-name-full {
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  font-family: 'Noto Serif KR', serif;
-}
-.user-org {
-  color: rgba(255,255,255,0.5);
-  font-size: 11px;
-  font-weight: 300;
-  margin-top: 1px;
-}
-.logout-btn {
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.6);
-  font-size: 11px;
-  padding: 5px 11px;
-  border-radius: 14px;
-  cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  white-space: nowrap;
-}
+/* 테이블 배치 안내 카드 */
+.seat-card { background: #0d1f3c; border-radius: 14px; overflow: hidden; margin-bottom: 18px; box-shadow: 0 6px 24px rgba(13,31,60,0.18); }
+.seat-card-head { padding: 14px 18px 12px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; gap: 10px; }
+.seat-card-head-icon { font-size: 18px; }
+.seat-card-head-title { font-family: 'Noto Serif KR', serif; color: #fff; font-size: 14px; font-weight: 700; }
+.seat-card-head-sub { color: rgba(255,255,255,0.45); font-size: 11px; margin-top: 1px; }
+.seat-card-body { padding: 18px; display: flex; align-items: center; gap: 20px; }
+.seat-table-circle { width: 88px; height: 88px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 2px solid rgba(201,168,76,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+.seat-table-num { font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 700; color: #e8c97a; line-height: 1; }
+.seat-table-text { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.seat-info { flex: 1; }
+.seat-info-label { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
+.seat-badge { width: 56px; height: 56px; background: #c9a84c; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 900; color: #0d1f3c; margin-bottom: 8px; }
+.seat-detail { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
+.seat-detail strong { color: #fff; }
+.seat-dots { display: flex; gap: 6px; padding: 12px 18px 16px; border-top: 1px solid rgba(255,255,255,0.07); }
+.seat-dot { width: 30px; height: 30px; border-radius: 7px; border: 1.5px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
+.seat-dot.mine { background: #c9a84c; border-color: #c9a84c; color: #0d1f3c; }
 
-.dash-body { padding: 20px 16px 48px; }
-
-/* Current session card */
-.current-session-wrap {
-  margin-bottom: 24px;
-}
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-light);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-.pulse-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #e53e3e;
-  box-shadow: 0 0 0 0 rgba(229,62,62,0.4);
-  animation: pulse 1.8s infinite;
-  flex-shrink: 0;
-}
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(229,62,62,0.4); }
-  70% { box-shadow: 0 0 0 8px rgba(229,62,62,0); }
-  100% { box-shadow: 0 0 0 0 rgba(229,62,62,0); }
-}
-
-.no-active-card {
-  background: var(--warm-white);
-  border: 1px dashed var(--border-dark);
-  border-radius: var(--radius);
-  padding: 28px 20px;
-  text-align: center;
-  color: var(--text-light);
-  font-size: 13px;
-}
-
-.active-session-card {
-  background: var(--warm-white);
-  border-radius: var(--radius);
-  border: 2px solid var(--navy-mid);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-  position: relative;
-}
-.active-session-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--navy-mid), var(--gold));
-}
-.active-session-inner {
-  padding: 20px 18px 18px;
-}
-.active-session-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 16px;
-}
-.session-badge {
-  flex-shrink: 0;
-  background: var(--navy);
-  color: var(--gold-light);
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  font-family: 'Noto Serif KR', serif;
-}
-.active-session-info {}
-.active-date-chip {
-  display: inline-block;
-  background: var(--gold-pale);
-  border: 1px solid rgba(201,168,76,0.3);
-  color: var(--amber);
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 9px;
-  border-radius: 8px;
-  margin-bottom: 5px;
-}
-.active-topic {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--navy);
-  line-height: 1.4;
-  margin-bottom: 3px;
-}
-.active-sub {
-  font-size: 12px;
-  color: var(--text-mid);
-  margin-bottom: 3px;
-}
-.active-speaker {
-  font-size: 11px;
-  color: var(--text-light);
-}
-
-.already-responded {
-  background: rgba(45,106,79,0.08);
-  border: 1px solid rgba(45,106,79,0.2);
-  border-radius: 10px;
-  padding: 14px 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.responded-icon {
-  width: 36px; height: 36px;
-  background: var(--green);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  color: #fff;
-  font-size: 16px;
-  flex-shrink: 0;
-}
-.responded-text {}
-.responded-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--green);
-  margin-bottom: 2px;
-}
-.responded-detail {
-  font-size: 11px;
-  color: var(--text-mid);
-}
-.btn-change {
-  margin-left: auto;
-  background: transparent;
-  border: 1px solid var(--border-dark);
-  color: var(--text-mid);
-  font-size: 11px;
-  padding: 5px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'Noto Sans KR', sans-serif;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-/* Response controls */
-.response-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 16px 0;
-}
-.response-section-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-mid);
-  margin-bottom: 9px;
-}
-.attend-btns {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 0;
-}
-.btn-attend {
-  flex: 1;
-  padding: 12px 8px;
-  border-radius: 10px;
-  border: 1.5px solid var(--border);
-  background: transparent;
-  font-size: 13px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 500;
-  color: var(--text-mid);
-  cursor: pointer;
-  transition: all 0.18s;
-  display: flex; align-items: center; justify-content: center;
-  gap: 6px;
-}
-.btn-attend:active { transform: scale(0.97); }
-.btn-attend.yes-active {
-  background: var(--green-bg);
-  border-color: var(--green);
-  color: var(--green);
-  font-weight: 700;
-}
-.btn-attend.no-active {
-  background: var(--red-bg);
-  border-color: var(--red);
-  color: var(--red);
-  font-weight: 700;
-}
-
-/* Seating card */
-.seating-card {
-  background: var(--navy);
-  border-radius: var(--radius);
-  overflow: hidden;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-lg);
-}
-.seating-card-head {
-  padding: 14px 18px 12px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  display: flex; align-items: center; gap: 10px;
-}
-.seating-card-icon {
-  font-size: 18px;
-}
-.seating-card-title {
-  font-family: 'Noto Serif KR', serif;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-}
-.seating-card-sub {
-  color: rgba(255,255,255,0.45);
-  font-size: 11px;
-  margin-top: 1px;
-}
-.seating-card-body {
-  padding: 20px 18px 22px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.seating-table-visual {
-  width: 90px; height: 90px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.06);
-  border: 2px solid rgba(201,168,76,0.4);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  position: relative;
-}
-.seating-table-num {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--gold-light);
-  line-height: 1;
-}
-.seating-table-label {
-  position: absolute;
-  bottom: -18px;
-  font-size: 10px;
-  color: rgba(255,255,255,0.4);
-  white-space: nowrap;
-}
-.seating-info-right { flex: 1; }
-.seating-detail-label {
-  font-size: 11px;
-  color: rgba(255,255,255,0.45);
-  margin-bottom: 4px;
-}
-.seating-seat-badge {
-  display: inline-block;
-  background: var(--gold);
-  color: var(--navy);
-  font-size: 32px;
-  font-weight: 900;
-  font-family: 'Noto Serif KR', serif;
-  width: 56px; height: 56px;
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 8px;
-}
-.seating-full-text {
-  font-size: 13px;
-  color: rgba(255,255,255,0.75);
-  line-height: 1.5;
-}
-.seating-full-text strong { color: #fff; }
-.seating-seats-row {
-  display: flex;
-  gap: 6px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,0.07);
-  flex-wrap: wrap;
-}
-.seat-dot {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1.5px solid rgba(255,255,255,0.15);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.3);
-}
-.seat-dot.mine {
-  background: var(--gold);
-  border-color: var(--gold);
-  color: var(--navy);
-}
-.seat-dot.taken {
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.2);
-}
-
-/* Admin seating */
-.table-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 14px;
-}
-.table-card-admin {
-  background: var(--cream);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-}
-.table-card-admin-head {
-  background: var(--navy);
-  color: var(--gold-light);
-  font-size: 11px;
-  font-weight: 700;
-  text-align: center;
-  padding: 6px 4px;
-  font-family: 'Noto Serif KR', serif;
-}
-.table-seat-row {
-  display: flex;
-  align-items: center;
-  padding: 5px 8px;
-  border-bottom: 1px solid var(--border);
-  gap: 6px;
-}
-.table-seat-row:last-child { border-bottom: none; }
-.seat-letter {
-  width: 20px; height: 20px;
-  background: var(--navy);
-  color: var(--gold-light);
-  border-radius: 5px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.seat-select {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 3px 4px;
-  font-size: 10px;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text-dark);
-  background: #fff;
-  outline: none;
-}
-.publish-bar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  background: var(--cream);
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  margin-bottom: 12px;
-}
-.publish-status {
-  flex: 1;
-  font-size: 12px;
-}
-.publish-status strong { color: var(--navy); }
-.publish-dot-on { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--green); margin-right: 5px; }
-.publish-dot-off { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ccc; margin-right: 5px; }
-
-.btn-save-response {
-  width: 100%;
-  margin-top: 14px;
-  padding: 13px;
-  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.15s, opacity 0.2s;
-  box-shadow: 0 3px 12px rgba(13,31,60,0.25);
-}
-.btn-save-response:active { transform: scale(0.98); }
-.btn-save-response:disabled { opacity: 0.45; cursor: not-allowed; }
-
-/* ============================================================
-   HISTORY LIST
-   ============================================================ */
-.history-wrap { margin-top: 24px; }
-.history-item {
-  background: var(--warm-white);
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  margin-bottom: 10px;
-  overflow: hidden;
-  transition: box-shadow 0.2s;
-}
-.history-item.attended { border-left: 3px solid var(--green); }
-.history-item.absent { border-left: 3px solid var(--red); }
+/* 이력 목록 */
+.history-item { background: #fdfcfa; border-radius: 12px; border: 1px solid #ddd8ce; margin-bottom: 10px; overflow: hidden; }
+.history-item.attend { border-left: 3px solid #2d6a4f; }
+.history-item.absent { border-left: 3px solid #c0392b; }
 .history-item.pending { border-left: 3px solid #cbd5e0; }
-.history-item.future { border-left: 3px solid transparent; opacity: 0.65; }
-
-.history-top {
-  padding: 13px 14px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.history-num {
-  width: 30px; height: 30px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: var(--gold-light);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-  font-family: 'Noto Serif KR', serif;
-}
+.history-item.future { border-left: 3px solid transparent; opacity: 0.6; }
+.history-top { padding: 12px 14px; display: flex; align-items: center; gap: 12px; }
+.history-num { width: 30px; height: 30px; background: #0d1f3c; color: #e8c97a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; font-family: 'Noto Serif KR', serif; flex-shrink: 0; }
 .history-info { flex: 1; min-width: 0; }
-.history-date {
-  font-size: 10px;
-  color: var(--gold);
-  font-weight: 600;
-  margin-bottom: 1px;
-}
-.history-topic {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--navy);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.history-speaker {
-  font-size: 10px;
-  color: var(--text-light);
-  margin-top: 1px;
-}
-.history-status {
-  flex-shrink: 0;
-  text-align: right;
-}
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 4px 9px;
-  border-radius: 8px;
-  white-space: nowrap;
-}
-.chip-attend { background: var(--green-bg); color: var(--green); }
-.chip-online { background: rgba(26,50,96,0.1); color: var(--navy-mid); }
-.chip-absent { background: var(--red-bg); color: var(--red); }
+.history-date { font-size: 10px; color: #c9a84c; font-weight: 600; }
+.history-topic { font-size: 13px; font-weight: 600; color: #0d1f3c; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.history-speaker { font-size: 10px; color: #8a9ab0; }
+.chip { display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 7px; white-space: nowrap; }
+.chip-attend { background: rgba(45,106,79,0.1); color: #2d6a4f; }
+.chip-absent { background: rgba(192,57,43,0.09); color: #c0392b; }
 .chip-pending { background: #f0f0f0; color: #888; }
 .chip-future { background: #f0f0f0; color: #aaa; }
+.actual-row { border-top: 1px solid #ddd8ce; padding: 8px 14px; display: flex; align-items: center; gap: 8px; background: #fafaf8; }
+.actual-chip { font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 5px; }
+.chip-o { background: rgba(45,106,79,0.12); color: #2d6a4f; }
+.chip-x { background: rgba(192,57,43,0.1); color: #c0392b; }
+.chip-none { background: #f0f0f0; color: #aaa; }
 
-/* Actual attendance row */
-.actual-row {
-  border-top: 1px solid var(--border);
-  padding: 9px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #fafaf8;
-}
-.actual-label {
-  font-size: 10px;
-  color: var(--text-light);
-  flex-shrink: 0;
-}
-.actual-chip {
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 6px;
-}
-.actual-o { background: rgba(45,106,79,0.12); color: var(--green); }
-.actual-x { background: rgba(192,57,43,0.1); color: var(--red); }
-.actual-none { background: #f0f0f0; color: #aaa; }
-
-/* ============================================================
-   ADMIN SCREEN
-   ============================================================ */
-#adminScreen.active { display: block; }
-
-.admin-tabs {
-  display: flex;
-  background: var(--navy);
-  padding: 0 16px;
-  gap: 0;
-}
-.admin-tab {
-  flex: 1;
-  text-align: center;
-  padding: 12px 4px;
-  color: rgba(255,255,255,0.45);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-.admin-tab.active {
-  color: var(--gold-light);
-  border-bottom-color: var(--gold);
-}
-
-.admin-body { padding: 18px 16px 48px; }
-.admin-tab-content { display: none; }
-.admin-tab-content.active { display: block; }
-
-/* Admin cards */
-.admin-card {
-  background: var(--warm-white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  margin-bottom: 14px;
-  overflow: hidden;
-}
-.admin-card-header {
-  background: var(--navy);
-  padding: 12px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.admin-card-title {
-  color: var(--gold-light);
-  font-size: 13px;
-  font-weight: 600;
-  font-family: 'Noto Serif KR', serif;
-}
-.admin-card-body { padding: 16px; }
-
-.admin-label {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-mid);
-  margin-bottom: 6px;
-  display: block;
-}
-.admin-input {
-  width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text-dark);
-  background: var(--cream);
-  outline: none;
-  transition: border-color 0.2s;
-  margin-bottom: 10px;
-}
-.admin-input:focus { border-color: var(--navy-mid); background: #fff; }
-.admin-select {
-  width: 100%;
-  border: 1.5px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 13px;
-  font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text-dark);
-  background: var(--cream);
-  outline: none;
-  margin-bottom: 10px;
-}
-.admin-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.btn-admin {
-  padding: 10px 16px;
-  background: var(--navy);
-  color: var(--gold-light);
-  border: none;
-  border-radius: 8px;
-  font-size: 12px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
+/* 관리자 탭 */
+.admin-tabs { display: flex; background: #0d1f3c; overflow-x: auto; }
+.admin-tab { flex-shrink: 0; padding: 12px 14px; color: rgba(255,255,255,0.45); font-size: 11px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.admin-tab.on { color: #e8c97a; border-bottom-color: #c9a84c; }
+.tab-content { display: none; padding: 16px; }
+.tab-content.on { display: block; }
+.admin-card { background: #fdfcfa; border: 1px solid #ddd8ce; border-radius: 12px; margin-bottom: 14px; overflow: hidden; }
+.admin-card-head { background: #0d1f3c; padding: 11px 16px; display: flex; align-items: center; justify-content: space-between; }
+.admin-card-title { color: #e8c97a; font-size: 13px; font-weight: 600; font-family: 'Noto Serif KR', serif; }
+.admin-card-body { padding: 14px 16px; }
+.admin-input { width: 100%; border: 1.5px solid #ddd8ce; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: #1a1a2e; background: #f7f4ee; outline: none; margin-bottom: 10px; transition: border-color 0.2s; }
+.admin-input:focus { border-color: #1a3260; background: #fff; }
+.admin-select { width: 100%; border: 1.5px solid #ddd8ce; border-radius: 8px; padding: 10px 12px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; color: #1a1a2e; background: #f7f4ee; outline: none; margin-bottom: 10px; }
+.col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-admin { padding: 10px 16px; background: #0d1f3c; color: #e8c97a; border: none; border-radius: 8px; font-size: 12px; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; cursor: pointer; transition: opacity 0.15s; }
 .btn-admin:active { opacity: 0.8; }
 .btn-admin.full { width: 100%; padding: 12px; font-size: 13px; }
-.btn-admin.danger {
-  background: var(--red-bg);
-  color: var(--red);
-  border: 1px solid rgba(192,57,43,0.2);
-}
-.btn-admin.sm {
-  padding: 5px 10px;
-  font-size: 11px;
-}
-
-/* Participant list */
-.participant-row {
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  gap: 10px;
-}
-.participant-row:last-child { border-bottom: none; }
-.participant-key {
-  background: var(--navy);
-  color: var(--gold-light);
-  font-size: 13px;
-  font-weight: 700;
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  font-family: 'Noto Serif KR', serif;
-}
-.participant-info { flex: 1; min-width: 0; }
-.participant-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--navy);
-}
-.participant-detail {
-  font-size: 10px;
-  color: var(--text-light);
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.participant-actions {
-  display: flex;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-/* Session selector for attendance */
-.session-select-wrap {
-  margin-bottom: 16px;
-}
-.session-tile {
-  display: flex;
-  align-items: center;
-  padding: 11px 14px;
-  border-bottom: 1px solid var(--border);
-  gap: 12px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.session-tile:last-child { border-bottom: none; }
-.session-tile:hover { background: var(--cream); }
-.session-tile.selected { background: rgba(26,50,96,0.06); }
-.session-tile-num {
-  width: 28px; height: 28px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: var(--gold-light);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.session-tile-info { flex: 1; }
-.session-tile-date { font-size: 10px; color: var(--gold); font-weight: 600; }
-.session-tile-topic { font-size: 12px; font-weight: 600; color: var(--navy); }
-.session-tile-badge {
-  font-size: 10px;
-  padding: 2px 7px;
-  border-radius: 6px;
-}
-.tile-open { background: rgba(229,62,62,0.12); color: #c53030; }
-.tile-closed { background: #f0f0f0; color: #888; }
-
-/* Attendance editor */
-.att-editor {
-  margin-top: 14px;
-}
-.att-row {
-  display: flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border);
-  gap: 10px;
-}
+.btn-admin.sm { padding: 5px 10px; font-size: 11px; }
+.btn-admin.danger { background: rgba(192,57,43,0.09); color: #c0392b; border: 1px solid rgba(192,57,43,0.2); }
+.p-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #ddd8ce; gap: 10px; }
+.p-row:last-child { border-bottom: none; }
+.p-key { width: 36px; height: 36px; background: #0d1f3c; color: #e8c97a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; font-family: 'Noto Serif KR', serif; flex-shrink: 0; }
+.p-name { font-size: 13px; font-weight: 600; color: #0d1f3c; }
+.p-detail { font-size: 10px; color: #8a9ab0; }
+.sess-tile { display: flex; align-items: center; padding: 11px 14px; border-bottom: 1px solid #ddd8ce; gap: 12px; cursor: pointer; transition: background 0.15s; }
+.sess-tile:last-child { border-bottom: none; }
+.sess-tile:hover, .sess-tile.sel { background: rgba(26,50,96,0.06); }
+.sess-num { width: 28px; height: 28px; background: #0d1f3c; color: #e8c97a; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.sess-info { flex: 1; }
+.sess-date { font-size: 10px; color: #c9a84c; font-weight: 600; }
+.sess-topic { font-size: 12px; font-weight: 600; color: #0d1f3c; }
+.badge-open { background: rgba(229,62,62,0.12); color: #c53030; font-size: 10px; padding: 2px 7px; border-radius: 6px; }
+.badge-closed { background: #f0f0f0; color: #888; font-size: 10px; padding: 2px 7px; border-radius: 6px; }
+.att-row { display: flex; align-items: center; padding: 10px 14px; border-bottom: 1px solid #ddd8ce; gap: 10px; }
 .att-row:last-child { border-bottom: none; }
-.att-name-col { flex: 1; }
-.att-name { font-size: 13px; font-weight: 600; color: var(--navy); }
-.att-response { font-size: 10px; color: var(--text-light); }
-.att-btns {
-  display: flex;
-  gap: 6px;
-}
-.att-btn {
-  width: 34px; height: 34px;
-  border-radius: 8px;
-  border: 1.5px solid var(--border);
-  background: transparent;
-  font-size: 15px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.15s;
-}
-.att-btn.o-active { background: var(--green-bg); border-color: var(--green); }
-.att-btn.x-active { background: var(--red-bg); border-color: var(--red); }
+.att-name { font-size: 13px; font-weight: 600; color: #0d1f3c; }
+.att-resp { font-size: 10px; color: #8a9ab0; }
+.att-btns { display: flex; gap: 6px; margin-left: auto; }
+.att-btn { width: 34px; height: 34px; border-radius: 8px; border: 1.5px solid #ddd8ce; background: transparent; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+.att-btn.o-on { background: rgba(45,106,79,0.1); border-color: #2d6a4f; }
+.att-btn.x-on { background: rgba(192,57,43,0.09); border-color: #c0392b; }
 
-/* Response summary table */
-.summary-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-.summary-table th {
-  background: var(--navy);
-  color: rgba(255,255,255,0.7);
-  padding: 8px 10px;
-  text-align: center;
-  font-weight: 500;
-  font-size: 10px;
-}
-.summary-table td {
-  padding: 9px 10px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-mid);
-}
-.summary-table tr:last-child td { border-bottom: none; }
-.summary-table tr:nth-child(even) td { background: #fafaf8; }
-.td-name { text-align: left !important; font-weight: 600; color: var(--navy) !important; }
-.cell-o { color: var(--green); font-weight: 700; }
-.cell-x { color: var(--red); font-weight: 700; }
-.cell-empty { color: #ccc; }
+/* 테이블 배치 */
+.table-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+.table-card { background: #f7f4ee; border: 1.5px solid #ddd8ce; border-radius: 10px; overflow: hidden; }
+.table-card-head { background: #0d1f3c; color: #e8c97a; font-size: 11px; font-weight: 700; text-align: center; padding: 6px 4px; font-family: 'Noto Serif KR', serif; }
+.seat-row { display: flex; align-items: center; padding: 4px 8px; border-bottom: 1px solid #ddd8ce; gap: 5px; }
+.seat-row:last-child { border-bottom: none; }
+.seat-ltr { width: 20px; height: 20px; background: #0d1f3c; color: #e8c97a; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+.seat-sel { flex: 1; border: 1px solid #ddd8ce; border-radius: 5px; padding: 3px 4px; font-size: 10px; font-family: 'Noto Sans KR', sans-serif; background: #fff; outline: none; }
+.publish-bar { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: #f7f4ee; border-radius: 10px; border: 1px solid #ddd8ce; margin-bottom: 12px; }
+.pub-dot-on { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #2d6a4f; margin-right: 5px; }
+.pub-dot-off { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #ccc; margin-right: 5px; }
 
-/* Settings */
-.setting-row {
-  padding: 14px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-}
-.setting-row:last-child { border-bottom: none; }
-.setting-label { font-size: 13px; font-weight: 500; color: var(--navy); }
-.setting-desc { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+/* 응답현황 테이블 */
+.sum-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.sum-table th { background: #0d1f3c; color: rgba(255,255,255,0.7); padding: 7px 8px; text-align: center; font-weight: 500; font-size: 10px; }
+.sum-table td { padding: 8px 8px; text-align: center; border-bottom: 1px solid #ddd8ce; color: #4a5568; }
+.sum-table tr:last-child td { border-bottom: none; }
+.sum-table tr:nth-child(even) td { background: #fafaf8; }
+.td-name { text-align: left !important; font-weight: 600; color: #0d1f3c !important; }
+.c-o { color: #2d6a4f; font-weight: 700; }
+.c-x { color: #c0392b; font-weight: 700; }
+.c-empty { color: #ccc; }
+
+/* 설정 */
+.pw-ok { color: #2d6a4f; font-size: 12px; min-height: 18px; margin-bottom: 10px; text-align: center; }
 
 /* Toast */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(80px);
-  background: var(--navy);
-  color: #fff;
-  padding: 12px 20px;
-  border-radius: 24px;
-  font-size: 13px;
-  font-weight: 500;
-  border-left: 3px solid var(--gold);
-  box-shadow: var(--shadow-lg);
-  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
-  z-index: 1000;
-  white-space: nowrap;
-}
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0d1f3c; color: #fff; padding: 12px 20px; border-radius: 24px; font-size: 13px; font-weight: 500; border-left: 3px solid #c9a84c; box-shadow: 0 8px 24px rgba(13,31,60,0.2); transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 9999; white-space: nowrap; }
 .toast.show { transform: translateX(-50%) translateY(0); }
 
-/* Fade-in */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.fadein { animation: fadeInUp 0.35s ease both; }
+/* Confirm Modal */
+.confirm-overlay { position: fixed; inset: 0; background: rgba(13,31,60,0.6); display: none; align-items: center; justify-content: center; z-index: 900; padding: 24px; }
+.confirm-overlay.show { display: flex; }
+.confirm-box { background: #fdfcfa; border-radius: 14px; padding: 28px 24px; width: 100%; max-width: 340px; box-shadow: 0 8px 32px rgba(13,31,60,0.2); }
+.confirm-title { font-family: 'Noto Serif KR', serif; font-size: 17px; font-weight: 700; color: #0d1f3c; margin-bottom: 8px; }
+.confirm-desc { font-size: 13px; color: #4a5568; margin-bottom: 20px; line-height: 1.6; }
+.confirm-btns { display: flex; gap: 10px; }
+.btn-cancel { flex: 1; padding: 12px; background: #f7f4ee; color: #4a5568; border: 1px solid #ddd8ce; border-radius: 8px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; cursor: pointer; }
+.btn-ok { flex: 1; padding: 12px; background: #0d1f3c; color: #fff; border: none; border-radius: 8px; font-size: 13px; font-family: 'Noto Sans KR', sans-serif; font-weight: 600; cursor: pointer; }
 
-/* Admin login modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(13,31,60,0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 900;
-  padding: 24px;
-}
-.modal-box {
-  background: var(--warm-white);
-  border-radius: var(--radius);
-  padding: 28px 24px;
-  width: 100%;
-  max-width: 340px;
-  box-shadow: var(--shadow-lg);
-}
-.modal-title {
-  font-family: 'Noto Serif KR', serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--navy);
-  margin-bottom: 6px;
-}
-.modal-desc {
-  font-size: 12px;
-  color: var(--text-mid);
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-.modal-btns {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
-.btn-cancel {
-  flex: 1;
-  padding: 12px;
-  background: var(--cream);
-  color: var(--text-mid);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer;
-}
-.btn-confirm {
-  flex: 1;
-  padding: 12px;
-  background: var(--navy);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: 'Noto Sans KR', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+.fadein { animation: fadeIn 0.3s ease both; }
 </style>
 </head>
 <body>
 
-<!-- ============================================================
-     LOGIN SCREEN
-     ============================================================ -->
-<div id="loginScreen" class="screen active">
-  <div class="login-hero">
-    <div class="login-badge">2026 Training Program</div>
-    <div class="login-title">금융회사<br>사외이사 프로그램</div>
-    <div class="login-desc">회차별 참여 의사 및 실제 출석을<br>확인하는 페이지입니다.</div>
-    <div class="login-meta">
-      <div class="login-meta-item"><div class="login-meta-dot"></div>4.28 ~ 6.30</div>
-      <div class="login-meta-item"><div class="login-meta-dot"></div>매주 화요일 07~09시</div>
-      <div class="login-meta-item"><div class="login-meta-dot"></div>총 10회</div>
-    </div>
-  </div>
-  <div class="login-gold-bar"></div>
-
-  <div class="login-body">
-    <div class="login-card fadein">
-      <div class="login-card-title">본인 확인</div>
-      <div class="login-card-desc">등록된 휴대폰 번호 뒷 4자리를<br>입력하시면 바로 접속됩니다.</div>
-      <span class="pin-label">휴대폰 뒷 4자리</span>
-      <div class="pin-wrap" onclick="document.getElementById('pinInput').focus()">
-        <input id="pinInput" class="pin-hidden" type="tel" maxlength="4" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
-        <div class="pin-display" id="pd0"></div>
-        <div class="pin-display" id="pd1"></div>
-        <div class="pin-display" id="pd2"></div>
-        <div class="pin-display" id="pd3"></div>
-      </div>
-      <button class="btn-login" onclick="doLogin()">확인하기</button>
-      <div class="login-error" id="loginError"></div>
-      <div class="login-hint">등록된 번호가 없거나 문의사항은<br>담당자에게 연락해 주세요.</div>
-    </div>
-    <span class="admin-link" onclick="openAdminModal()">관리자 페이지</span>
-  </div>
-</div>
-
-<!-- ============================================================
-     USER DASHBOARD SCREEN
-     ============================================================ -->
-<div id="dashScreen" class="screen">
-  <div class="top-bar">
-    <div class="top-bar-row">
-      <div>
-        <div class="top-bar-logo">사외이사 <span>프로그램</span></div>
-        <div class="top-bar-sub">2026 금융회사 사외이사 연수</div>
-      </div>
+<!-- ① 로그인 화면 -->
+<div id="s-login" class="screen">
+  <div class="hero">
+    <div class="badge">2026 Training Program</div>
+    <div class="hero-title">금융회사<br>사외이사 프로그램</div>
+    <div class="hero-desc">회차별 참여 의사 및 실제 출석을 확인합니다</div>
+    <div style="display:flex;gap:16px;margin-top:18px;position:relative;z-index:1;">
+      <span style="font-size:11px;color:rgba(255,255,255,0.5);">● 4.28 ~ 6.30</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.5);">● 매주 화요일</span>
+      <span style="font-size:11px;color:rgba(255,255,255,0.5);">● 총 10회</span>
     </div>
   </div>
   <div class="gold-bar"></div>
-  <div class="user-info-strip">
-    <div class="user-info-left">
-      <div class="user-greeting">반갑습니다</div>
-      <div class="user-name-full" id="dashName">-</div>
-      <div class="user-org" id="dashOrg">-</div>
+  <div class="body-pad">
+    <div class="card fadein">
+      <div style="font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:#0d1f3c;margin-bottom:6px;">본인 확인</div>
+      <div style="font-size:12px;color:#4a5568;margin-bottom:20px;line-height:1.6;">등록된 휴대폰 번호 뒷 4자리를<br>입력하시면 바로 접속됩니다.</div>
+      <span class="label">휴대폰 뒷 4자리</span>
+      <input id="pinInput" class="input-field" type="tel" maxlength="4" inputmode="numeric" autocomplete="off" pattern="[0-9]*" placeholder="숫자 4자리">
+      <div id="loginError" class="error-msg"></div>
+      <button class="btn-primary" onclick="doLogin()">확인하기</button>
+      <div class="hint">등록된 번호가 없거나 문의사항은<br>담당자에게 연락해 주세요.</div>
     </div>
-    <button class="logout-btn" onclick="doLogout()">로그아웃</button>
-  </div>
-
-  <div class="dash-body">
-    <!-- Seating notice -->
-    <div id="seatingNoticeArea"></div>
-
-    <!-- Current session -->
-    <div class="current-session-wrap">
-      <div class="section-label">
-        <div class="pulse-dot"></div>
-        현재 회신 접수 중
-      </div>
-      <div id="activeSessionArea"></div>
-    </div>
-
-    <!-- History -->
-    <div class="history-wrap">
-      <div class="section-label">전체 회차 현황</div>
-      <div id="historyList"></div>
-    </div>
+    <button onclick="goAdminLogin()" style="display:block;width:100%;text-align:center;margin-top:20px;font-size:13px;color:#8a9ab0;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'Noto Sans KR',sans-serif;">관리자 페이지</button>
   </div>
 </div>
 
-<!-- ============================================================
-     ADMIN SCREEN
-     ============================================================ -->
-<div id="adminScreen" class="screen">
-  <div class="top-bar">
-    <div class="top-bar-row">
-      <div>
-        <div class="top-bar-logo">관리자 <span>페이지</span></div>
-        <div class="top-bar-sub">2026 금융회사 사외이사 프로그램</div>
-      </div>
-      <button class="logout-btn" onclick="doLogout()">나가기</button>
-    </div>
+<!-- ② 관리자 로그인 화면 -->
+<div id="s-adminlogin" class="screen">
+  <div class="hero" style="padding:44px 28px 36px;">
+    <div class="badge">Admin</div>
+    <div class="hero-title" style="font-size:20px;">관리자 로그인</div>
+    <div class="hero-desc">관리자 비밀번호를 입력해 주세요.</div>
   </div>
   <div class="gold-bar"></div>
-
-  <div class="admin-tabs">
-    <div class="admin-tab active" onclick="switchAdminTab('participants')">연수생 관리</div>
-    <div class="admin-tab" onclick="switchAdminTab('sessions')">회차 설정</div>
-    <div class="admin-tab" onclick="switchAdminTab('attendance')">출석 입력</div>
-    <div class="admin-tab" onclick="switchAdminTab('seating')">테이블 배치</div>
-    <div class="admin-tab" onclick="switchAdminTab('summary')">응답 현황</div>
-    <div class="admin-tab" onclick="switchAdminTab('config')">설정</div>
-  </div>
-
-  <div class="admin-body">
-
-    <!-- TAB: 연수생 관리 -->
-    <div class="admin-tab-content active" id="tab-participants">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">연수생 추가</span>
-        </div>
-        <div class="admin-card-body">
-          <div class="admin-2col">
-            <div>
-              <label class="admin-label">성함 *</label>
-              <input class="admin-input" id="addName" placeholder="홍길동">
-            </div>
-            <div>
-              <label class="admin-label">소속기관 *</label>
-              <input class="admin-input" id="addOrg" placeholder="○○은행">
-            </div>
-          </div>
-          <label class="admin-label">기관 유형</label>
-          <select class="admin-select" id="addOrgType">
-            <option>사원기관(은행)</option>
-            <option>유관기관(지주)</option>
-            <option>비사원기관(자회사)</option>
-          </select>
-          <label class="admin-label">휴대폰 번호 *</label>
-          <input class="admin-input" id="addPhone" placeholder="01012341234 (숫자만)">
-          <button class="btn-admin full" onclick="addParticipant()">연수생 추가</button>
-        </div>
-      </div>
-
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">연수생 목록</span>
-          <span style="color:rgba(255,255,255,0.5);font-size:11px;" id="participantCount">0명</span>
-        </div>
-        <div id="participantList"></div>
-      </div>
+  <div class="body-pad">
+    <div class="card fadein">
+      <span class="label">비밀번호</span>
+      <input id="adminPwInput" class="input-field" type="password" placeholder="초기 비밀번호: 1234" style="letter-spacing:6px;" onkeydown="if(event.key==='Enter') confirmAdmin()">
+      <div id="adminPwError" class="error-msg"></div>
+      <button class="btn-primary" onclick="confirmAdmin()">로그인</button>
     </div>
-
-    <!-- TAB: 회차 설정 -->
-    <div class="admin-tab-content" id="tab-sessions">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">현재 접수 회차 설정</span>
-        </div>
-        <div id="sessionTileList"></div>
-      </div>
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">접수 마감 처리</span>
-        </div>
-        <div class="admin-card-body">
-          <p style="font-size:12px;color:var(--text-mid);margin-bottom:12px;">현재 열려 있는 회차의 접수를 마감합니다.</p>
-          <button class="btn-admin full danger" onclick="closeCurrentSession()">현재 회차 마감하기</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: 출석 입력 -->
-    <div class="admin-tab-content" id="tab-attendance">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">회차 선택</span>
-        </div>
-        <div id="attSessionList"></div>
-      </div>
-      <div class="admin-card" id="attEditorCard" style="display:none;">
-        <div class="admin-card-header">
-          <span class="admin-card-title" id="attEditorTitle">출석 입력</span>
-          <button class="btn-admin sm" onclick="saveAttendance()">저장</button>
-        </div>
-        <div id="attEditor"></div>
-      </div>
-    </div>
-
-    <!-- TAB: 테이블 배치 -->
-    <div class="admin-tab-content" id="tab-seating">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">회차 선택</span>
-        </div>
-        <div id="seatSessionList"></div>
-      </div>
-      <div id="seatEditorWrap" style="display:none;">
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <span class="admin-card-title" id="seatEditorTitle">테이블 배치 입력</span>
-            <button class="btn-admin sm" onclick="saveSeating()">저장</button>
-          </div>
-          <div class="admin-card-body">
-            <div class="publish-bar">
-              <div class="publish-status" id="publishStatus"></div>
-              <button class="btn-admin sm" id="publishBtn" onclick="togglePublish()">공개</button>
-            </div>
-            <div class="table-grid" id="tableGrid"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: 응답 현황 -->
-    <div class="admin-tab-content" id="tab-summary">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">전체 응답 현황</span>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="summary-table" id="summaryTable">
-            <thead><tr id="summaryHead"></tr></thead>
-            <tbody id="summaryBody"></tbody>
-          </table>
-        </div>
-      </div>
-    <!-- TAB: 설정 -->
-    <div class="admin-tab-content" id="tab-config">
-      <div class="admin-card">
-        <div class="admin-card-header">
-          <span class="admin-card-title">🔐 관리자 비밀번호 변경</span>
-        </div>
-        <div class="admin-card-body">
-          <label class="admin-label">현재 비밀번호</label>
-          <input class="admin-input" type="password" id="pwCurrent" placeholder="현재 비밀번호 입력">
-          <label class="admin-label">새 비밀번호</label>
-          <input class="admin-input" type="password" id="pwNew" placeholder="새 비밀번호 입력">
-          <label class="admin-label">새 비밀번호 확인</label>
-          <input class="admin-input" type="password" id="pwConfirm" placeholder="새 비밀번호 다시 입력">
-          <div id="pwMsg" style="font-size:12px;min-height:18px;margin-bottom:10px;"></div>
-          <button class="btn-admin full" onclick="changePassword()">비밀번호 변경</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-</div>
-<div class="modal-overlay" id="adminModal" style="display:none;">
-  <div class="modal-box">
-    <div class="modal-title">관리자 로그인</div>
-    <div class="modal-desc">관리자 비밀번호를 입력하세요.<br><small style="color:var(--text-light);">초기 비밀번호: <strong>1234</strong></small></div>
-    <label class="admin-label">비밀번호</label>
-    <input class="admin-input" type="password" id="adminPwInput" placeholder="••••" onkeydown="if(event.key==='Enter')confirmAdmin()">
-    <div style="color:var(--red);font-size:12px;min-height:16px;" id="adminPwError"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeAdminModal()">취소</button>
-      <button class="btn-confirm" onclick="confirmAdmin()">확인</button>
-    </div>
+    <button onclick="go('s-login')" style="display:block;width:100%;text-align:center;margin-top:20px;font-size:13px;color:#8a9ab0;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'Noto Sans KR',sans-serif;">← 뒤로가기</button>
   </div>
 </div>
 
-<!-- Confirm Modal -->
-<div class="modal-overlay" id="confirmModal" style="display:none;">
-  <div class="modal-box">
-    <div class="modal-title" id="confirmTitle">확인</div>
-    <div class="modal-desc" id="confirmDesc"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="closeConfirm()">취소</button>
-      <button class="btn-confirm" id="confirmOkBtn">확인</button>
-    </div>
+<!-- ③ 연수생 대시보드 -->
+<div id="s-dash" class="screen">
+  <div class="top-bar">
+    <div><div class="top-bar-title">사외이사 <span>프로그램</span></div><div class="top-bar-sub">2026 금융회사 사외이사 연수</div></div>
+  </div>
+  <div class="gold-bar"></div>
+  <div class="info-strip">
+    <div><div class="user-name" id="dashName">-</div><div class="user-org" id="dashOrg">-</div></div>
+    <button class="btn-small" onclick="doLogout()">로그아웃</button>
+  </div>
+  <div style="padding:20px 16px 48px;">
+    <div id="seatArea"></div>
+    <div class="section-label"><div class="pulse-dot"></div>현재 회신 접수 중</div>
+    <div id="activeArea"></div>
+    <div class="section-label" style="margin-top:24px;">전체 회차 현황</div>
+    <div id="historyArea"></div>
   </div>
 </div>
 
-<!-- Toast -->
+<!-- ④ 관리자 페이지 -->
+<div id="s-admin" class="screen">
+  <div class="top-bar">
+    <div><div class="top-bar-title">관리자 <span>페이지</span></div><div class="top-bar-sub">2026 금융회사 사외이사 프로그램</div></div>
+    <button class="btn-small" onclick="doLogout()">나가기</button>
+  </div>
+  <div class="gold-bar"></div>
+  <div class="admin-tabs" id="adminTabs">
+    <div class="admin-tab on" onclick="switchTab('t-participants')">연수생</div>
+    <div class="admin-tab" onclick="switchTab('t-sessions')">회차설정</div>
+    <div class="admin-tab" onclick="switchTab('t-attendance')">출석입력</div>
+    <div class="admin-tab" onclick="switchTab('t-seating')">테이블배치</div>
+    <div class="admin-tab" onclick="switchTab('t-summary')">응답현황</div>
+    <div class="admin-tab" onclick="switchTab('t-config')">설정</div>
+  </div>
+  <div id="t-participants" class="tab-content on">
+    <div class="admin-card">
+      <div class="admin-card-head"><span class="admin-card-title">연수생 추가</span></div>
+      <div class="admin-card-body">
+        <div class="col2"><div><label class="label">성함 *</label><input class="admin-input" id="addName" placeholder="홍길동"></div><div><label class="label">소속기관 *</label><input class="admin-input" id="addOrg" placeholder="○○은행"></div></div>
+        <label class="label">기관 유형</label>
+        <select class="admin-select" id="addOrgType"><option>사원기관(은행)</option><option>유관기관(지주)</option><option>비사원기관(자회사)</option></select>
+        <label class="label">휴대폰 번호 *</label>
+        <input class="admin-input" id="addPhone" placeholder="01012341234 (숫자만)">
+        <button class="btn-admin full" onclick="addParticipant()">연수생 추가</button>
+      </div>
+    </div>
+    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">연수생 목록</span><span id="pCount" style="color:rgba(255,255,255,0.5);font-size:11px;">0명</span></div><div id="pList"></div></div>
+  </div>
+  <div id="t-sessions" class="tab-content">
+    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">접수 회차 설정</span></div><div id="sessTiles"></div></div>
+    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">접수 마감</span></div><div class="admin-card-body"><p style="font-size:12px;color:#4a5568;margin-bottom:12px;">현재 열린 회차의 접수를 마감합니다.</p><button class="btn-admin full danger" onclick="closeSession()">현재 회차 마감하기</button></div></div>
+  </div>
+  <div id="t-attendance" class="tab-content">
+    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">회차 선택</span></div><div id="attTiles"></div></div>
+    <div class="admin-card" id="attEditor" style="display:none;"><div class="admin-card-head"><span class="admin-card-title" id="attTitle">출석 입력</span><button class="btn-admin sm" onclick="saveAtt()">저장</button></div><div id="attRows"></div></div>
+  </div>
+  <div id="t-seating" class="tab-content">
+    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">회차 선택</span></div><div id="seatTiles"></div></div>
+    <div id="seatEditor" style="display:none;">
+      <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title" id="seatTitle">테이블 배치</span><button class="btn-admin sm" onclick="saveSeating()">저장</button></div>
+      <div class="admin-card-body">
+        <div class="publish-bar"><div id="pubStatus" style="flex:1;font-size:12px;"></div><button class="btn-admin sm" id="pubBtn" onclick="togglePublish()">공개</button></div>
+        <div class="table-grid" id="tableGrid"></div>
+      </div></div>
+    </div>
+  </div>
+  <div id="t-summary" class="tab-content"><div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">전체 응답 현황</span></div><div style="overflow-x:auto;"><table class="sum-table"><thead><tr id="sumHead"></tr></thead><tbody id="sumBody"></tbody></table></div></div></div>
+  <div id="t-config" class="tab-content">
+    <div class="admin-card"><div class="admin-card-head"><span class="admin-card-title">비밀번호 변경</span></div>
+    <div class="admin-card-body">
+      <label class="label">현재 비밀번호</label><input class="admin-input" type="password" id="pwCur" placeholder="현재 비밀번호">
+      <label class="label">새 비밀번호</label><input class="admin-input" type="password" id="pwNew" placeholder="새 비밀번호">
+      <label class="label">새 비밀번호 확인</label><input class="admin-input" type="password" id="pwCfm" placeholder="다시 입력">
+      <div id="pwMsg" class="pw-ok"></div>
+      <button class="btn-admin full" onclick="changePw()">비밀번호 변경</button>
+    </div></div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="cfmTitle">확인</div>
+    <div class="confirm-desc" id="cfmDesc"></div>
+    <div class="confirm-btns"><button class="btn-cancel" onclick="closeConfirm()">취소</button><button class="btn-ok" id="cfmOk">확인</button></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
-/* ============================================================
-   ★★★ 설정: 여기만 바꾸면 Google Sheets와 연동됩니다 ★★★
-   Google Apps Script 배포 후 받은 URL을 아래에 붙여넣으세요.
-   URL을 입력하지 않으면 기기 내 저장(데모 모드)으로 작동합니다.
-   ============================================================ */
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyT5X2APYJckTus8hH-d19t5w-d2VL9e_W7kjv7v3Pj67NKcrxsodfmjnxC74hZ5Ep/exec';
 
-/* ============================================================
-   DATA (회차 정보 - 변경 불필요)
-   ============================================================ */
 const SESSIONS = [
-  { num:1,  date:"4.28(화)", topic:"국내 금융산업 현안과 과제",      sub:"지배구조 선진화를 중심으로", speaker:"이찬진 원장 (금융감독원)",        optional:false },
-  { num:2,  date:"5.12(화)", topic:"금융회사 지배구조",               sub:"이사회의 역할과 책임",       speaker:"정순섭 교수 (서울대학교)",        optional:false },
-  { num:3,  date:"5.19(화)", topic:"금융회사 재무지표",               sub:"",                          speaker:"손 혁 교수 (계명대학교)",         optional:false },
-  { num:4,  date:"5.26(화)", topic:"금융소비자 보호",                 sub:"",                          speaker:"김미영 前부원장 (前금융감독원)",   optional:false },
-  { num:5,  date:"5.29(금)", topic:"Healing & Build-up",             sub:"네트워킹 행사",              speaker:"선택 참여 (엘리시안 강촌 CC)",    optional:true  },
-  { num:6,  date:"6.2(화)",  topic:"내부통제와 준법경영",             sub:"내부통제위, 감사위",          speaker:"임성재 파트너 (PWC 삼일)",        optional:false },
-  { num:7,  date:"6.9(화)",  topic:"금융회사 경영전략",               sub:"",                          speaker:"윤종규 前회장 (前 KB금융지주)",   optional:false },
-  { num:8,  date:"6.16(화)", topic:"금융회사 리스크관리",             sub:"위험관리위원회",              speaker:"정완호 대표 (한국리스크관리)",    optional:false },
-  { num:9,  date:"6.23(화)", topic:"금융회사 A·I, 디지털 거버넌스",  sub:"",                          speaker:"이효섭 실장 (자본시장연구원)",     optional:false },
-  { num:10, date:"6.30(화)", topic:"금융회사 이사회 등 지배구조 감독방향", sub:"",                     speaker:"금융감독원",                       optional:false }
+  {num:1, date:"4.28(화)", topic:"국내 금융산업 현안과 과제", sub:"지배구조 선진화", speaker:"이찬진 원장 (금융감독원)", optional:false},
+  {num:2, date:"5.12(화)", topic:"금융회사 지배구조", sub:"이사회 역할과 책임", speaker:"정순섭 교수 (서울대)", optional:false},
+  {num:3, date:"5.19(화)", topic:"금융회사 재무지표", sub:"", speaker:"손 혁 교수 (계명대)", optional:false},
+  {num:4, date:"5.26(화)", topic:"금융소비자 보호", sub:"", speaker:"김미영 前부원장 (前금감원)", optional:false},
+  {num:5, date:"5.29(금)", topic:"Healing & Build-up", sub:"네트워킹 행사", speaker:"선택 참여 (엘리시안 강촌)", optional:true},
+  {num:6, date:"6.2(화)", topic:"내부통제와 준법경영", sub:"내부통제위, 감사위", speaker:"임성재 파트너 (PWC 삼일)", optional:false},
+  {num:7, date:"6.9(화)", topic:"금융회사 경영전략", sub:"", speaker:"윤종규 前회장 (前 KB금융)", optional:false},
+  {num:8, date:"6.16(화)", topic:"금융회사 리스크관리", sub:"위험관리위원회", speaker:"정완호 대표 (한국리스크관리)", optional:false},
+  {num:9, date:"6.23(화)", topic:"금융회사 A·I, 디지털 거버넌스", sub:"", speaker:"이효섭 실장 (자본시장연구원)", optional:false},
+  {num:10, date:"6.30(화)", topic:"금융회사 이사회 등 지배구조 감독방향", sub:"", speaker:"금융감독원", optional:false}
 ];
 
-/* ============================================================
-   데이터 저장소 (메모리 캐시)
-   - Google Sheets 연동 시: 페이지 로드 때 Sheets에서 불러온 뒤
-     이 캐시에 보관합니다. 저장할 때는 캐시와 Sheets 모두 업데이트.
-   - 데모 모드: localStorage를 Sheets 대신 사용합니다.
-   ============================================================ */
-const CACHE = {
-  participants:   null,
-  responses:      null,
-  settings:       null,
-  seating:        null,
-  seatPublished:  null,
-  actual:         null,
-};
-
+/* ─── 저장소 ─── */
+const CACHE = {p:null, r:null, s:null, seat:null, pub:null, act:null};
 const useSheets = () => GAS_URL && GAS_URL.startsWith('https://');
+const lsG = (k,fb) => { try { return JSON.parse(localStorage.getItem(k)) ?? fb; } catch(e){ return fb; } };
+const lsS = (k,v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} };
 
-/* ---------- localStorage 헬퍼 (데모 모드 전용) ---------- */
-function lsGet(key, fallback){ return JSON.parse(localStorage.getItem(key)||JSON.stringify(fallback)); }
-function lsSet(key,val){ localStorage.setItem(key,JSON.stringify(val)); }
+function getP()   { return CACHE.p   || []; }
+function getR()   { return CACHE.r   || {}; }
+function getS()   { return CACHE.s   || {currentSession:null, closedSessions:[], adminPw:'1234'}; }
+function getSeat(){ return CACHE.seat || {}; }
+function getPub() { return CACHE.pub  || {}; }
+function getAct() { return CACHE.act  || {}; }
 
-/* ---------- Google Sheets API 호출 ---------- */
-async function gasCall(action, data){
-  const url = new URL(GAS_URL);
-  url.searchParams.set('action', action);
-  if(data !== undefined) url.searchParams.set('data', JSON.stringify(data));
+function setP(v)   { CACHE.p   = v; lsS('p',v);    if(useSheets()) gas('setParticipants',v); }
+function setR(v)   { CACHE.r   = v; lsS('r',v);    if(useSheets()) gas('setResponses',v); }
+function setS(v)   { CACHE.s   = v; lsS('s',v);    if(useSheets()) gas('setSettings',v); }
+function setSeat(v){ CACHE.seat= v; lsS('seat',v);  if(useSheets()) gas('setSeating',v); }
+function setPub(v) { CACHE.pub = v; lsS('pub',v);   if(useSheets()) gas('setSeatingPublished',v); }
+function setAct(v) { CACHE.act = v; lsS('act',v);   if(useSheets()) gas('setActual',v); }
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 10000);
+async function gas(action, data) {
   try {
-    const res = await fetch(url.toString(), { redirect:'follow', signal: controller.signal });
-    clearTimeout(timer);
-    const text = await res.text();
-    return JSON.parse(text);
-  } catch(e) {
-    clearTimeout(timer);
-    throw e;
-  }
+    const url = new URL(GAS_URL);
+    url.searchParams.set('action', action);
+    if(data !== undefined) url.searchParams.set('data', JSON.stringify(data));
+    const ctrl = new AbortController();
+    const t = setTimeout(()=>ctrl.abort(), 8000);
+    const res = await fetch(url.toString(), {redirect:'follow', signal:ctrl.signal});
+    clearTimeout(t);
+    return JSON.parse(await res.text());
+  } catch(e) { return null; }
 }
 
-/* ---------- 캐시 읽기 ---------- */
-function getParticipants()    { return CACHE.participants   || []; }
-function getResponses()       { return CACHE.responses      || {}; }
-function getSettings()        { return CACHE.settings       || { currentSession:null, closedSessions:[], adminPw:'1234' }; }
-function getSeating()         { return CACHE.seating        || {}; }
-function getSeatingPublished(){ return CACHE.seatPublished  || {}; }
-function getActual()          { return CACHE.actual         || {}; }
-
-/* ---------- 캐시 쓰기 ---------- */
-function setParticipants(v){ CACHE.participants  = v; persist('setParticipants', v, 'participants'); }
-function setResponses(v)    { CACHE.responses     = v; persist('setResponses',    v, 'responses'); }
-function setSettings(v)     { CACHE.settings      = v; persist('setSettings',     v, 'settings'); }
-function setSeating(v)      { CACHE.seating       = v; persist('setSeating',      v, 'seating'); }
-function setSeatingPublished(v){ CACHE.seatPublished = v; persist('setSeatingPublished', v, 'seatPublished'); }
-function setActual(v)       { CACHE.actual        = v; persist('setActual',       v, 'actual'); }
-
-function persist(action, v, lsKey){
-  lsSet(lsKey, v); // 항상 로컬에도 저장
-  if(useSheets()) gasCall(action, v).catch(()=>{}); // Sheets는 백그라운드
-}
-
-/* ---------- 로딩 오버레이 ---------- */
-function showLoading(msg='불러오는 중…'){
-  let el = document.getElementById('loadingOverlay');
-  if(!el){
-    el = document.createElement('div');
-    el.id = 'loadingOverlay';
-    el.style.cssText = `position:fixed;inset:0;background:rgba(13,31,60,0.85);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:16px;`;
-    el.innerHTML = `
-      <div style="width:44px;height:44px;border:3px solid rgba(201,168,76,0.3);
-        border-top-color:#c9a84c;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-      <div id="loadingMsg" style="color:#fff;font-size:14px;font-weight:500;
-        font-family:'Noto Sans KR',sans-serif;">${msg}</div>
-      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
-    document.body.appendChild(el);
-  } else {
-    document.getElementById('loadingMsg').textContent = msg;
-    el.style.display = 'flex';
-  }
-  // 안전장치: 어떤 경우에도 8초 후 강제 해제
-  clearTimeout(window._loadingTimer);
-  window._loadingTimer = setTimeout(hideLoading, 8000);
-}
-function hideLoading(){
-  clearTimeout(window._loadingTimer);
-  const el = document.getElementById('loadingOverlay');
-  if(el) el.style.display = 'none';
-}
-
-/* ---------- 페이지 시작: 항상 즉시 로컬 로드, Sheets는 백그라운드 ---------- */
-function initData(){
-  loadFromLocalStorage();                                         // ① 즉시 로컬 데이터 로드
-  if(useSheets() && location.protocol !== 'file:'){
-    syncFromSheets();                                             // ② Sheets는 뒤에서 조용히
-  }
-}
-
-async function syncFromSheets(){
+async function syncFromSheets() {
   try {
-    const [p, r, s, seat, pub, act] = await Promise.all([
-      gasCall('getParticipants'),
-      gasCall('getResponses'),
-      gasCall('getSettings'),
-      gasCall('getSeating'),
-      gasCall('getSeatingPublished'),
-      gasCall('getActual'),
+    const [p,r,s,seat,pub,act] = await Promise.all([
+      gas('getParticipants'), gas('getResponses'), gas('getSettings'),
+      gas('getSeating'), gas('getSeatingPublished'), gas('getActual')
     ]);
-    if(Array.isArray(p))                              CACHE.participants  = p;
-    if(r && typeof r==='object' && !Array.isArray(r)) CACHE.responses     = r;
-    if(s && typeof s==='object' && !Array.isArray(s)) CACHE.settings      = s;
-    if(seat && typeof seat==='object')                CACHE.seating       = seat;
-    if(pub && typeof pub==='object')                  CACHE.seatPublished = pub;
-    if(act && typeof act==='object')                  CACHE.actual        = act;
-    // 로컬에도 동기화
-    lsSet('participants',  CACHE.participants);
-    lsSet('responses',     CACHE.responses);
-    lsSet('settings',      CACHE.settings);
-    lsSet('seating',       CACHE.seating);
-    lsSet('seatPublished', CACHE.seatPublished);
-    lsSet('actual',        CACHE.actual);
-  } catch(e){
-    // 실패해도 무시 — 로컬 데이터로 계속
-  }
+    if(Array.isArray(p)) CACHE.p = p;
+    if(r && !Array.isArray(r)) CACHE.r = r;
+    if(s && !Array.isArray(s)) CACHE.s = s;
+    if(seat && !Array.isArray(seat)) CACHE.seat = seat;
+    if(pub && !Array.isArray(pub)) CACHE.pub = pub;
+    if(act && !Array.isArray(act)) CACHE.act = act;
+    ['p','r','s','seat','pub','act'].forEach(k => { if(CACHE[k]) lsS(k, CACHE[k]); });
+  } catch(e) {}
 }
 
-function loadFromLocalStorage(){
-  CACHE.participants  = lsGet('participants',  []);
-  CACHE.responses     = lsGet('responses',     {});
-  CACHE.settings      = lsGet('settings',      { currentSession:1, closedSessions:[], adminPw:'1234' });
-  CACHE.seating       = lsGet('seating',       {});
-  CACHE.seatPublished = lsGet('seatPublished', {});
-  CACHE.actual        = lsGet('actual',        {});
-
-  /* 데모 샘플 데이터 */
-  if(CACHE.participants.length === 0){
-    CACHE.participants = [
-      { id:'001', name:'김철수', org:'한국은행',    orgType:'사원기관(은행)',       phone:'01012341111', key:'1111' },
-      { id:'002', name:'이영희', org:'KB금융지주', orgType:'유관기관(지주)',        phone:'01098762222', key:'2222' },
-      { id:'003', name:'박민준', org:'신한카드',   orgType:'비사원기관(자회사)',    phone:'01055553333', key:'3333' },
-      { id:'004', name:'최지현', org:'우리은행',   orgType:'사원기관(은행)',       phone:'01077774444', key:'4444' },
-      { id:'005', name:'정도윤', org:'하나금융지주',orgType:'유관기관(지주)',       phone:'01022225555', key:'5555' },
+function loadLocal() {
+  CACHE.p    = lsG('p', []);
+  CACHE.r    = lsG('r', {});
+  CACHE.s    = lsG('s', {currentSession:1, closedSessions:[], adminPw:'1234'});
+  CACHE.seat = lsG('seat', {});
+  CACHE.pub  = lsG('pub', {});
+  CACHE.act  = lsG('act', {});
+  if(!CACHE.p.length) {
+    CACHE.p = [
+      {id:'001', name:'김철수', org:'한국은행', orgType:'사원기관(은행)', phone:'01012341111', key:'1111'},
+      {id:'002', name:'이영희', org:'KB금융지주', orgType:'유관기관(지주)', phone:'01098762222', key:'2222'},
+      {id:'003', name:'박민준', org:'신한카드', orgType:'비사원기관(자회사)', phone:'01055553333', key:'3333'},
+      {id:'004', name:'최지현', org:'우리은행', orgType:'사원기관(은행)', phone:'01077774444', key:'4444'},
+      {id:'005', name:'정도윤', org:'하나금융지주', orgType:'유관기관(지주)', phone:'01022225555', key:'5555'},
     ];
-    lsSet('participants', CACHE.participants);
+    lsS('p', CACHE.p);
   }
 }
 
-/* ============================================================
-   앱 상태
-   ============================================================ */
-let currentUser       = null;
-let adminLoggedIn     = false;
-let selectedAttSession = null;
-let tmpResponse       = {};
-
-/* ============================================================
-   화면 전환
-   ============================================================ */
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+/* ─── 화면 전환 ─── */
+function go(id) {
+  document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(id === 's-login' || id === 's-adminlogin') {
+    el.style.display = 'flex';
+    el.style.flexDirection = 'column';
+    el.style.minHeight = '100vh';
+  } else {
+    el.style.display = 'block';
+  }
 }
 
-/* ============================================================
-   로그인
-   ============================================================ */
+/* ─── 상태 ─── */
+let CU = null; // 현재 사용자
+let selAttSess = null, selSeatSess = null;
+let tmpAtt = {}, tmpSeat = {}, tmpResp = {};
+
+/* ─── 로그인 ─── */
 const pinInput = document.getElementById('pinInput');
-const pinDisplays = [0,1,2,3].map(i=>document.getElementById('pd'+i));
-
-function updatePinDisplay(){
-  const val = pinInput.value.replace(/\D/g,'').slice(0,4);
-  pinInput.value = val;
-  pinDisplays.forEach((d,i)=>{
-    d.textContent = val[i] ? '●' : '';
-    d.className = 'pin-display'+(val[i]?' filled':'')+(i===val.length?' active-cursor':'');
-  });
-  if(val.length===4) doLogin();
-}
-pinInput.addEventListener('input', updatePinDisplay);
-pinInput.addEventListener('focus', ()=>{
-  const val = pinInput.value;
-  pinDisplays.forEach((d,i)=>{ d.className='pin-display'+(val[i]?' filled':'')+(i===val.length?' active-cursor':''); });
+pinInput.addEventListener('input', function() {
+  this.value = this.value.replace(/\D/g,'').slice(0,4);
+  if(this.value.length === 4) doLogin();
 });
-pinInput.addEventListener('blur', ()=>pinDisplays.forEach(d=>d.classList.remove('active-cursor')));
-pinInput.addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+pinInput.addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
-function getPinValue(){ return pinInput.value.replace(/\D/g,''); }
-
-function resetPin(){
-  pinInput.value='';
-  updatePinDisplay();
-  pinDisplays[0].classList.add('active-cursor');
-  setTimeout(()=>pinInput.focus(),100);
+async function doLogin() {
+  const pin = pinInput.value.replace(/\D/g,'');
+  if(pin.length < 4) { document.getElementById('loginError').textContent = '4자리를 모두 입력해 주세요.'; return; }
+  if(useSheets()) { try { await syncFromSheets(); } catch(e){} }
+  const found = getP().find(p => p.key === pin);
+  if(!found) { document.getElementById('loginError').textContent = '일치하는 연수생 정보가 없습니다.'; pinInput.value=''; return; }
+  CU = found;
+  document.getElementById('loginError').textContent = '';
+  renderDash();
+  go('s-dash');
 }
 
-async function doLogin(){
-  const pin = getPinValue();
-  if(pin.length<4){ showError('4자리를 모두 입력해 주세요.'); return; }
+function goAdminLogin() {
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminPwError').textContent = '';
+  go('s-adminlogin');
+  setTimeout(() => { try { document.getElementById('adminPwInput').focus(); } catch(e){} }, 200);
+}
 
-  // Sheets 연동 시 최신 데이터 백그라운드 동기화 후 로그인
-  if(useSheets() && location.protocol !== 'file:'){
-    showLoading('확인 중…');
-    try { await syncFromSheets(); } catch(e){}
-    finally { hideLoading(); }
+async function confirmAdmin() {
+  const pw = document.getElementById('adminPwInput').value;
+  if(useSheets()) { try { await syncFromSheets(); } catch(e){} }
+  if(pw === getS().adminPw) {
+    document.getElementById('adminPwInput').value = '';
+    renderAdmin();
+    go('s-admin');
+  } else {
+    document.getElementById('adminPwError').textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('adminPwInput').value = '';
   }
-
-  const found = getParticipants().find(p=>p.key===pin);
-  if(!found){ showError('일치하는 연수생 정보가 없습니다.'); resetPin(); return; }
-  currentUser = found;
-  document.getElementById('loginError').textContent='';
-  renderDashboard();
-  showScreen('dashScreen');
 }
 
-function showError(msg){ document.getElementById('loginError').textContent=msg; }
-
-function doLogout(){
-  currentUser=null; adminLoggedIn=false;
-  resetPin(); selectedAttSession=null; tmpResponse={};
-  showScreen('loginScreen');
+function doLogout() {
+  CU = null; pinInput.value = '';
+  go('s-login');
 }
 
-/* ============================================================
-   연수생 대시보드
-   ============================================================ */
-function renderDashboard(){
-  document.getElementById('dashName').textContent = currentUser.name+' 이사님';
-  document.getElementById('dashOrg').textContent  = currentUser.org+' · '+currentUser.orgType;
-  renderSeatingNotice();
-  renderActiveSession();
+/* ─── 대시보드 ─── */
+function renderDash() {
+  document.getElementById('dashName').textContent = CU.name + ' 이사님';
+  document.getElementById('dashOrg').textContent  = CU.org + ' · ' + CU.orgType;
+  renderSeatNotice();
+  renderActive();
   renderHistory();
 }
 
-function renderSeatingNotice(){
-  const area     = document.getElementById('seatingNoticeArea');
-  const seating  = getSeating();
-  const published= getSeatingPublished();
-  let upcoming   = null;
-  for(let i=0;i<SESSIONS.length;i++){
-    const snum=SESSIONS[i].num;
-    if(published[snum]){
-      const k=`${snum}_${currentUser.id}`;
-      if(seating[k]){ upcoming={ sess:SESSIONS[i], seat:seating[k] }; break; }
-    }
+function renderSeatNotice() {
+  const area = document.getElementById('seatArea');
+  const seat = getSeat(), pub = getPub();
+  let found = null;
+  for(let i=0; i<SESSIONS.length; i++) {
+    const sn = SESSIONS[i].num;
+    if(pub[sn]) { const k = sn+'_'+CU.id; if(seat[k]) { found = {sess:SESSIONS[i], seat:seat[k]}; break; } }
   }
-  if(!upcoming){ area.innerHTML=''; return; }
-  const {sess,seat}=upcoming;
-  const seatsHtml=['A','B','C','D','E'].map(s=>`<div class="seat-dot ${s===seat.seat?'mine':''}">${s}</div>`).join('');
-  area.innerHTML=`
-    <div class="seating-card fadein">
-      <div class="seating-card-head">
-        <span class="seating-card-icon">🪑</span>
-        <div>
-          <div class="seating-card-title">${sess.num}회차 테이블 배치 안내</div>
-          <div class="seating-card-sub">${sess.date} · ${sess.topic}</div>
-        </div>
+  if(!found) { area.innerHTML=''; return; }
+  const {sess, seat:s} = found;
+  const dots = ['A','B','C','D','E'].map(x=>`<div class="seat-dot ${x===s.seat?'mine':''}">${x}</div>`).join('');
+  area.innerHTML = `
+    <div class="seat-card fadein">
+      <div class="seat-card-head"><span class="seat-card-head-icon">🪑</span><div><div class="seat-card-head-title">${sess.num}회차 테이블 배치 안내</div><div class="seat-card-head-sub">${sess.date} · ${sess.topic}</div></div></div>
+      <div class="seat-card-body">
+        <div class="seat-table-circle"><div class="seat-table-num">${s.table}</div><div class="seat-table-text">테이블</div></div>
+        <div class="seat-info"><div class="seat-info-label">배정 좌석</div><div class="seat-badge">${s.seat}</div><div class="seat-detail"><strong>${s.table}번 테이블</strong> · <strong>${s.seat}석</strong><br>뱅커스클럽 16층</div></div>
       </div>
-      <div class="seating-card-body">
-        <div>
-          <div class="seating-table-visual">
-            <div class="seating-table-num">${seat.table}</div>
-            <span class="seating-table-label">테이블</span>
-          </div>
-        </div>
-        <div class="seating-info-right">
-          <div class="seating-detail-label">배정 좌석</div>
-          <div class="seating-seat-badge">${seat.seat}</div>
-          <div class="seating-full-text"><strong>${seat.table}번 테이블</strong> · <strong>${seat.seat}석</strong><br>장소: 뱅커스클럽 16층</div>
-        </div>
-      </div>
-      <div style="padding:0 18px 16px;">
-        <div class="seating-seats-row">
-          ${seatsHtml}
-          <span style="font-size:10px;color:rgba(255,255,255,0.3);line-height:32px;margin-left:4px;">← 본 테이블 좌석</span>
-        </div>
-      </div>
-    </div>
-    <div style="margin-bottom:4px;"></div>`;
+      <div class="seat-dots">${dots}</div>
+    </div>`;
 }
 
-function renderActiveSession(){
-  const settings=getSettings(), area=document.getElementById('activeSessionArea'), cn=settings.currentSession;
-  if(!cn){ area.innerHTML=`<div class="no-active-card">현재 접수 중인 회차가 없습니다.<br>다음 안내를 기다려 주세요.</div>`; return; }
-  const sess=SESSIONS[cn-1], responses=getResponses();
-  const existing=responses[`${currentUser.id}_${cn}`];
-  tmpResponse=existing?{attend:existing.attend}:{};
-  area.innerHTML=`
-    <div class="active-session-card fadein">
-      <div class="active-session-inner">
-        <div class="active-session-top">
-          <div class="session-badge">${cn}</div>
-          <div class="active-session-info">
-            <div class="active-date-chip">${sess.date}${sess.optional?' · 선택참여':''}</div>
-            <div class="active-topic">${sess.topic}</div>
-            ${sess.sub?`<div class="active-sub">${sess.sub}</div>`:''}
-            <div class="active-speaker">${sess.speaker}</div>
-          </div>
+function renderActive() {
+  const area = document.getElementById('activeArea');
+  const ss = getS(), cn = ss.currentSession;
+  if(!cn) { area.innerHTML='<div class="no-active">현재 접수 중인 회차가 없습니다.<br>다음 안내를 기다려 주세요.</div>'; return; }
+  const sess = SESSIONS[cn-1], r = getR()[CU.id+'_'+cn];
+  tmpResp = r ? {attend: r.attend} : {};
+  const yOn = tmpResp.attend===true, nOn = tmpResp.attend===false;
+  area.innerHTML = `
+    <div class="active-card fadein">
+      <div class="active-card-inner">
+        <div class="session-top">
+          <div class="session-num">${cn}</div>
+          <div><div class="session-date">${sess.date}${sess.optional?' · 선택':''}</div><div class="session-topic">${sess.topic}</div>${sess.sub?`<div style="font-size:12px;color:#4a5568;">${sess.sub}</div>`:''}<div class="session-speaker">${sess.speaker}</div></div>
         </div>
-        <div class="response-divider"></div>
-        <div class="response-section-label">참여 여부를 선택해 주세요</div>
+        <div class="divider"></div>
+        <div class="sub-label">참여 여부를 선택해 주세요</div>
         <div class="attend-btns">
-          <button class="btn-attend ${tmpResponse.attend===true?'yes-active':''}" id="btnYes" onclick="setAttend(true)">✓ 참여</button>
-          <button class="btn-attend ${tmpResponse.attend===false?'no-active':''}" id="btnNo" onclick="setAttend(false)">✗ 불참</button>
+          <button class="attend-btn ${yOn?'yes':''}" id="btnY" onclick="setAttend(true)">✓ 참여</button>
+          <button class="attend-btn ${nOn?'no':''}" id="btnN" onclick="setAttend(false)">✗ 불참</button>
         </div>
-        <button class="btn-save-response" id="btnSave" onclick="saveResponse(${cn})" ${tmpResponse.attend!==undefined?'':'disabled'}>
-          ${existing?'회신 수정하기':'회신 저장하기'}
-        </button>
+        <button class="btn-save" id="btnSave" onclick="saveResp(${cn})" ${tmpResp.attend!==undefined?'':'disabled'}>${r?'회신 수정하기':'회신 저장하기'}</button>
       </div>
     </div>`;
 }
 
-function setAttend(val){
-  tmpResponse.attend=val;
-  const yes=document.getElementById('btnYes'), no=document.getElementById('btnNo');
-  if(yes) yes.className='btn-attend'+(val?' yes-active':'');
-  if(no)  no.className='btn-attend'+(!val?' no-active':'');
-  const btn=document.getElementById('btnSave');
-  if(btn) btn.disabled=(val===undefined);
+function setAttend(v) {
+  tmpResp.attend = v;
+  const y=document.getElementById('btnY'), n=document.getElementById('btnN'), s=document.getElementById('btnSave');
+  if(y) y.className='attend-btn'+(v?' yes':'');
+  if(n) n.className='attend-btn'+(!v?' no':'');
+  if(s) s.disabled = false;
 }
 
-function saveResponse(sessNum){
-  const responses=getResponses();
-  responses[`${currentUser.id}_${sessNum}`]={ attend:tmpResponse.attend, ts:Date.now() };
-  setResponses(responses);
-  showToast('회신이 저장되었습니다 ✓');
-  renderDashboard();
+function saveResp(cn) {
+  const r = getR(); r[CU.id+'_'+cn] = {attend:tmpResp.attend, ts:Date.now()}; setR(r);
+  toast('회신이 저장되었습니다 ✓'); renderDash();
 }
 
-function renderHistory(){
-  const list=document.getElementById('historyList');
-  const responses=getResponses(), actual=getActual(), settings=getSettings(), cn=settings.currentSession;
-  list.innerHTML=SESSIONS.map(sess=>{
-    const r=responses[`${currentUser.id}_${sess.num}`];
-    const a=actual[`${currentUser.id}_${sess.num}`];
-    const isClosed=settings.closedSessions&&settings.closedSessions.includes(sess.num);
-    const isFuture=sess.num!==cn&&!isClosed;
+function renderHistory() {
+  const area = document.getElementById('historyArea');
+  const r=getR(), act=getAct(), ss=getS(), cn=ss.currentSession;
+  area.innerHTML = SESSIONS.map(sess => {
+    const rk = CU.id+'_'+sess.num, rv = r[rk], av = act[rk];
+    const isClosed = ss.closedSessions?.includes(sess.num);
+    const isFuture = sess.num!==cn && !isClosed;
     let chip='', cls='';
-    if(!r){
-      chip=isFuture?`<span class="status-chip chip-future">-</span>`:`<span class="status-chip chip-pending">미응답</span>`;
-      cls=isFuture?'future':'pending';
-    } else if(!r.attend){
-      chip=`<span class="status-chip chip-absent">✗ 불참</span>`; cls='absent';
-    } else {
-      chip=`<span class="status-chip chip-attend">✓ 참여</span>`; cls='attended';
+    if(!rv) { chip=isFuture?`<span class="chip chip-future">-</span>`:`<span class="chip chip-pending">미응답</span>`; cls=isFuture?'future':'pending'; }
+    else if(!rv.attend) { chip=`<span class="chip chip-absent">✗ 불참</span>`; cls='absent'; }
+    else { chip=`<span class="chip chip-attend">✓ 참여</span>`; cls='attend'; }
+    let actHtml='';
+    if(isClosed || av!==undefined) {
+      if(av===undefined||av===null) actHtml=`<div class="actual-row"><span style="font-size:10px;color:#8a9ab0;">실제 출석</span><span class="actual-chip chip-none" style="margin-left:8px;">미확인</span></div>`;
+      else if(av===true) actHtml=`<div class="actual-row"><span style="font-size:10px;color:#8a9ab0;">실제 출석</span><span class="actual-chip chip-o" style="margin-left:8px;">출석 ○</span></div>`;
+      else actHtml=`<div class="actual-row"><span style="font-size:10px;color:#8a9ab0;">실제 출석</span><span class="actual-chip chip-x" style="margin-left:8px;">결석 ✗</span></div>`;
     }
-    let actualHtml='';
-    if(isClosed||a!==undefined){
-      if(a===undefined||a===null) actualHtml=`<div class="actual-row"><span class="actual-label">실제 출석</span><span class="actual-chip actual-none">미확인</span></div>`;
-      else if(a===true)           actualHtml=`<div class="actual-row"><span class="actual-label">실제 출석</span><span class="actual-chip actual-o">출석 ○</span></div>`;
-      else                        actualHtml=`<div class="actual-row"><span class="actual-label">실제 출석</span><span class="actual-chip actual-x">결석 ✗</span></div>`;
-    }
-    return `<div class="history-item ${cls}">
-      <div class="history-top">
-        <div class="history-num">${sess.num}</div>
-        <div class="history-info">
-          <div class="history-date">${sess.date}${sess.optional?' · 선택':''}</div>
-          <div class="history-topic">${sess.topic}</div>
-          <div class="history-speaker">${sess.speaker}</div>
-        </div>
-        <div class="history-status">${chip}</div>
-      </div>${actualHtml}</div>`;
+    return `<div class="history-item ${cls}"><div class="history-top"><div class="history-num">${sess.num}</div><div class="history-info"><div class="history-date">${sess.date}${sess.optional?' · 선택':''}</div><div class="history-topic">${sess.topic}</div><div class="history-speaker">${sess.speaker}</div></div><div>${chip}</div></div>${actHtml}</div>`;
   }).join('');
 }
 
-/* ============================================================
-   관리자 모달
-   ============================================================ */
-function openAdminModal(){
-  document.getElementById('adminModal').style.display='flex';
-  document.getElementById('adminPwInput').value='';
-  document.getElementById('adminPwError').textContent='';
-  setTimeout(()=>document.getElementById('adminPwInput').focus(),100);
-}
-function closeAdminModal(){ document.getElementById('adminModal').style.display='none'; }
-async function confirmAdmin(){
-  const pw = document.getElementById('adminPwInput').value;
-
-  // Sheets 연동 시 최신 설정으로 비밀번호 확인
-  if(useSheets() && location.protocol !== 'file:'){
-    showLoading('확인 중…');
-    try { await syncFromSheets(); } catch(e){}
-    finally { hideLoading(); }
-  }
-
-  if(pw === getSettings().adminPw){
-    closeAdminModal();
-    adminLoggedIn = true;
-    renderAdminPage();
-    showScreen('adminScreen');
-  } else {
-    document.getElementById('adminPwError').textContent='비밀번호가 올바르지 않습니다.';
-  }
-}
-
-/* ============================================================
-   관리자 페이지
-   ============================================================ */
-function switchAdminTab(tab){
-  document.querySelectorAll('.admin-tab').forEach((t,i)=>{
-    ['participants','sessions','attendance','seating','summary','config'].forEach((n,j)=>{ if(i===j) t.classList.toggle('active',n===tab); });
+/* ─── 관리자 ─── */
+function switchTab(id) {
+  document.querySelectorAll('.admin-tab').forEach((t,i) => {
+    const ids=['t-participants','t-sessions','t-attendance','t-seating','t-summary','t-config'];
+    t.className = 'admin-tab' + (ids[i]===id?' on':'');
   });
-  document.querySelectorAll('.admin-tab-content').forEach(c=>c.classList.remove('active'));
-  document.getElementById('tab-'+tab).classList.add('active');
-  if(tab==='participants') renderParticipantList();
-  if(tab==='sessions')    renderSessionTiles();
-  if(tab==='attendance')  renderAttSessionList();
-  if(tab==='seating')     renderSeatSessionList();
-  if(tab==='summary')     renderSummary();
-}
-function renderAdminPage(){
-  renderParticipantList(); renderSessionTiles();
-  renderAttSessionList();  renderSeatSessionList(); renderSummary();
+  document.querySelectorAll('.tab-content').forEach(c => c.className='tab-content');
+  const el = document.getElementById(id); if(el) el.className='tab-content on';
+  if(id==='t-participants') renderPList();
+  if(id==='t-sessions') renderSessTiles();
+  if(id==='t-attendance') renderAttTiles();
+  if(id==='t-seating') renderSeatTiles();
+  if(id==='t-summary') renderSummary();
 }
 
-/* --- 연수생 관리 --- */
-function renderParticipantList(){
-  const ps=getParticipants();
-  document.getElementById('participantCount').textContent=ps.length+'명';
-  document.getElementById('participantList').innerHTML=ps.length===0
-    ?`<div style="padding:20px;text-align:center;color:var(--text-light);font-size:13px;">등록된 연수생이 없습니다.</div>`
-    :ps.map(p=>`
-      <div class="participant-row">
-        <div class="participant-key">${p.key}</div>
-        <div class="participant-info">
-          <div class="participant-name">${p.name}</div>
-          <div class="participant-detail">${p.org} · ${p.orgType} · ${p.phone}</div>
-        </div>
-        <div class="participant-actions">
-          <button class="btn-admin sm danger" onclick="deleteParticipant('${p.id}')">삭제</button>
-        </div>
-      </div>`).join('');
+function renderAdmin() { renderPList(); renderSessTiles(); renderAttTiles(); renderSeatTiles(); renderSummary(); }
+
+/* 연수생 */
+function renderPList() {
+  const ps = getP();
+  document.getElementById('pCount').textContent = ps.length+'명';
+  document.getElementById('pList').innerHTML = ps.length===0
+    ? '<div style="padding:20px;text-align:center;color:#8a9ab0;font-size:13px;">등록된 연수생이 없습니다.</div>'
+    : ps.map(p=>`<div class="p-row"><div class="p-key">${p.key}</div><div style="flex:1;min-width:0;"><div class="p-name">${p.name}</div><div class="p-detail">${p.org} · ${p.orgType}</div></div><button class="btn-admin sm danger" onclick="delP('${p.id}')">삭제</button></div>`).join('');
 }
-function addParticipant(){
-  const name=document.getElementById('addName').value.trim();
-  const org=document.getElementById('addOrg').value.trim();
-  const orgType=document.getElementById('addOrgType').value;
-  const phone=document.getElementById('addPhone').value.replace(/\D/g,'');
-  if(!name||!org||!phone){ showToast('필수 항목을 입력해 주세요'); return; }
-  if(phone.length<4){ showToast('번호를 확인해 주세요'); return; }
-  const key=phone.slice(-4), ps=getParticipants();
-  if(ps.find(p=>p.key===key)){ showToast('같은 번호 뒷자리가 이미 있습니다'); return; }
-  ps.push({ id:String(Date.now()), name, org, orgType, phone, key });
-  setParticipants(ps);
-  document.getElementById('addName').value='';
-  document.getElementById('addOrg').value='';
-  document.getElementById('addPhone').value='';
-  renderParticipantList();
-  showToast(name+'님 추가 완료 ✓');
+
+function addParticipant() {
+  const name=document.getElementById('addName').value.trim(), org=document.getElementById('addOrg').value.trim();
+  const orgType=document.getElementById('addOrgType').value, phone=document.getElementById('addPhone').value.replace(/\D/g,'');
+  if(!name||!org||!phone) { toast('필수 항목을 입력해 주세요'); return; }
+  const key=phone.slice(-4), ps=getP();
+  if(ps.find(p=>p.key===key)) { toast('같은 번호 뒷자리가 이미 있습니다'); return; }
+  ps.push({id:String(Date.now()), name, org, orgType, phone, key});
+  setP(ps);
+  ['addName','addOrg','addPhone'].forEach(id => document.getElementById(id).value='');
+  renderPList(); toast(name+'님 추가 완료 ✓');
 }
-function deleteParticipant(id){
-  showConfirm('연수생 삭제','해당 연수생과 관련된 모든 응답 데이터가 삭제됩니다. 계속하시겠습니까?',()=>{
-    setParticipants(getParticipants().filter(p=>p.id!==id));
-    renderParticipantList(); showToast('삭제되었습니다');
+
+function delP(id) {
+  confirm2('연수생 삭제', '해당 연수생의 모든 데이터가 삭제됩니다. 계속하시겠습니까?', () => {
+    setP(getP().filter(p=>p.id!==id)); renderPList(); toast('삭제되었습니다');
   });
 }
 
-/* --- 회차 설정 --- */
-function renderSessionTiles(){
-  const s=getSettings();
-  document.getElementById('sessionTileList').innerHTML=SESSIONS.map(sess=>{
-    const isCur=s.currentSession===sess.num;
-    const isClosed=s.closedSessions&&s.closedSessions.includes(sess.num);
-    const badge=isClosed?`<span class="session-tile-badge tile-closed">마감</span>`
-      :isCur?`<span class="session-tile-badge tile-open">접수중</span>`
-      :`<span class="session-tile-badge tile-closed">대기</span>`;
-    return `<div class="session-tile ${isCur?'selected':''}" onclick="setCurrentSession(${sess.num})">
-      <div class="session-tile-num">${sess.num}</div>
-      <div class="session-tile-info">
-        <div class="session-tile-date">${sess.date}</div>
-        <div class="session-tile-topic">${sess.topic}</div>
-      </div>${badge}</div>`;
+/* 회차 설정 */
+function renderSessTiles() {
+  const ss=getS();
+  document.getElementById('sessTiles').innerHTML = SESSIONS.map(sess=>{
+    const isC=ss.currentSession===sess.num, isCl=ss.closedSessions?.includes(sess.num);
+    const badge=isCl?`<span class="badge-closed">마감</span>`:isC?`<span class="badge-open">접수중</span>`:`<span class="badge-closed">대기</span>`;
+    return `<div class="sess-tile ${isC?'sel':''}" onclick="setCurrentSess(${sess.num})"><div class="sess-num">${sess.num}</div><div class="sess-info"><div class="sess-date">${sess.date}</div><div class="sess-topic">${sess.topic}</div></div>${badge}</div>`;
   }).join('');
 }
-function setCurrentSession(num){
-  const s=getSettings();
-  s.currentSession=(s.currentSession===num)?null:num;
-  setSettings(s); renderSessionTiles();
-  showToast(s.currentSession?`${num}회차 접수 시작`:'접수 마감');
+
+function setCurrentSess(num) {
+  const ss=getS(); ss.currentSession = ss.currentSession===num ? null : num;
+  setS(ss); renderSessTiles(); toast(ss.currentSession ? `${num}회차 접수 시작` : '접수 마감');
 }
-function closeCurrentSession(){
-  const s=getSettings();
-  if(!s.currentSession){ showToast('현재 열린 회차가 없습니다'); return; }
-  showConfirm('접수 마감',`${s.currentSession}회차 접수를 마감하시겠습니까?`,()=>{
-    if(!s.closedSessions) s.closedSessions=[];
-    if(!s.closedSessions.includes(s.currentSession)) s.closedSessions.push(s.currentSession);
-    s.currentSession=null; setSettings(s); renderSessionTiles(); showToast('마감 처리 완료');
+
+function closeSession() {
+  const ss=getS(); if(!ss.currentSession) { toast('열린 회차가 없습니다'); return; }
+  confirm2('접수 마감', `${ss.currentSession}회차 접수를 마감하시겠습니까?`, () => {
+    if(!ss.closedSessions) ss.closedSessions=[];
+    if(!ss.closedSessions.includes(ss.currentSession)) ss.closedSessions.push(ss.currentSession);
+    ss.currentSession=null; setS(ss); renderSessTiles(); toast('마감 처리 완료');
   });
 }
 
-/* --- 출석 입력 --- */
-function renderAttSessionList(){
-  document.getElementById('attSessionList').innerHTML=SESSIONS.map(sess=>`
-    <div class="session-tile ${selectedAttSession===sess.num?'selected':''}" onclick="selectAttSession(${sess.num})">
-      <div class="session-tile-num">${sess.num}</div>
-      <div class="session-tile-info">
-        <div class="session-tile-date">${sess.date}</div>
-        <div class="session-tile-topic">${sess.topic}</div>
-      </div>
-    </div>`).join('');
-}
-let tempActual={};
-function selectAttSession(num){
-  selectedAttSession=num; renderAttSessionList();
-  const sess=SESSIONS[num-1], ps=getParticipants(), actual=getActual(), responses=getResponses();
-  tempActual={};
-  ps.forEach(p=>{ const k=`${p.id}_${num}`; tempActual[k]=actual[k]; });
-  document.getElementById('attEditorTitle').textContent=`${num}회차 · ${sess.date} 출석 입력`;
-  document.getElementById('attEditorCard').style.display='block';
-  document.getElementById('attEditor').innerHTML=ps.length===0
-    ?`<div style="padding:20px;text-align:center;color:var(--text-light);">등록된 연수생이 없습니다.</div>`
-    :ps.map(p=>{
-      const rk=`${p.id}_${num}`, r=responses[rk], cur=tempActual[rk];
-      const rt=!r?'미응답':!r.attend?'불참 회신':'참여 회신';
-      return `<div class="att-row" id="attRow_${p.id}">
-        <div class="att-name-col">
-          <div class="att-name">${p.name}</div>
-          <div class="att-response">${p.org} · ${rt}</div>
-        </div>
-        <div class="att-btns">
-          <button class="att-btn ${cur===true?'o-active':''}" onclick="toggleAtt('${p.id}',${num},true)">○</button>
-          <button class="att-btn ${cur===false?'x-active':''}" onclick="toggleAtt('${p.id}',${num},false)">✗</button>
-        </div>
-      </div>`;
-    }).join('');
-}
-function toggleAtt(pid,snum,val){
-  const k=`${pid}_${snum}`;
-  tempActual[k]=tempActual[k]===val?undefined:val;
-  const btns=document.getElementById(`attRow_${pid}`).querySelectorAll('.att-btn');
-  btns[0].className='att-btn'+(tempActual[k]===true?' o-active':'');
-  btns[1].className='att-btn'+(tempActual[k]===false?' x-active':'');
-}
-function saveAttendance(){
-  const actual=getActual();
-  Object.assign(actual,tempActual);
-  setActual(actual);
-  showToast('출석 저장 완료 ✓');
+/* 출석 입력 */
+function renderAttTiles() {
+  document.getElementById('attTiles').innerHTML = SESSIONS.map(sess=>`<div class="sess-tile ${selAttSess===sess.num?'sel':''}" onclick="selAtt(${sess.num})"><div class="sess-num">${sess.num}</div><div class="sess-info"><div class="sess-date">${sess.date}</div><div class="sess-topic">${sess.topic}</div></div></div>`).join('');
 }
 
-/* --- 응답 현황 --- */
-function renderSummary(){
-  const ps=getParticipants(), responses=getResponses();
-  document.getElementById('summaryHead').innerHTML=`<th class="td-name" style="color:rgba(255,255,255,0.7);text-align:left;">이름</th>`+SESSIONS.map(s=>`<th>${s.num}회</th>`).join('');
-  document.getElementById('summaryBody').innerHTML=ps.map(p=>{
-    const cells=SESSIONS.map(sess=>{
-      const r=responses[`${p.id}_${sess.num}`];
-      if(!r) return`<td class="cell-empty">-</td>`;
-      if(!r.attend) return`<td class="cell-x">✗</td>`;
-      return`<td class="cell-o">○</td>`;
-    }).join('');
-    return`<tr><td class="td-name">${p.name}</td>${cells}</tr>`;
-  }).join('')||`<tr><td colspan="${SESSIONS.length+1}" style="padding:20px;color:var(--text-light);text-align:center;">데이터 없음</td></tr>`;
-}
-
-/* ============================================================
-   테이블 배치 관리
-   ============================================================ */
-const TABLES=9, SEAT_LETTERS=['A','B','C','D','E'];
-let selectedSeatSession=null, tempSeating={};
-
-function renderSeatSessionList(){
-  const pub=getSeatingPublished();
-  document.getElementById('seatSessionList').innerHTML=SESSIONS.map(sess=>`
-    <div class="session-tile ${selectedSeatSession===sess.num?'selected':''}" onclick="selectSeatSession(${sess.num})">
-      <div class="session-tile-num">${sess.num}</div>
-      <div class="session-tile-info">
-        <div class="session-tile-date">${sess.date}</div>
-        <div class="session-tile-topic">${sess.topic}</div>
-      </div>
-      <span class="session-tile-badge ${pub[sess.num]?'tile-open':'tile-closed'}">${pub[sess.num]?'공개중':'미공개'}</span>
-    </div>`).join('');
-}
-function selectSeatSession(num){
-  selectedSeatSession=num; renderSeatSessionList();
-  const seating=getSeating(), ps=getParticipants(), sess=SESSIONS[num-1];
-  tempSeating={};
-  ps.forEach(p=>{ const k=`${num}_${p.id}`; if(seating[k]) tempSeating[k]={...seating[k]}; });
-  document.getElementById('seatEditorWrap').style.display='block';
-  document.getElementById('seatEditorTitle').textContent=`${num}회차 · ${sess.date} 배치 입력`;
-  renderPublishBar(num); renderTableGrid(num);
-}
-function renderPublishBar(num){
-  const isOn=!!getSeatingPublished()[num];
-  document.getElementById('publishStatus').innerHTML=`
-    <span class="${isOn?'publish-dot-on':'publish-dot-off'}"></span>
-    <strong>${isOn?'연수생에게 공개 중':'미공개 상태'}</strong>
-    ${isOn?'<br><span style="font-size:10px;color:var(--text-light);">연수생 로그인 시 배치 표시됨</span>'
-           :'<br><span style="font-size:10px;color:var(--text-light);">저장 후 공개를 눌러주세요</span>'}`;
-  const btn=document.getElementById('publishBtn');
-  btn.textContent=isOn?'비공개':'공개';
-  btn.style.background=isOn?'var(--red-bg)':'var(--navy)';
-  btn.style.color=isOn?'var(--red)':'var(--gold-light)';
-}
-function togglePublish(){
-  if(!selectedSeatSession) return;
-  const pub=getSeatingPublished();
-  pub[selectedSeatSession]=!pub[selectedSeatSession];
-  setSeatingPublished(pub);
-  renderPublishBar(selectedSeatSession); renderSeatSessionList();
-  showToast(pub[selectedSeatSession]?'연수생에게 공개되었습니다 ✓':'비공개로 변경되었습니다');
-}
-function renderTableGrid(snum){
-  const ps=getParticipants(), responses=getResponses();
-  const attending=ps.filter(p=>{ const r=responses[`${p.id}_${snum}`]; return r&&r.attend; });
-  let html='';
-  for(let t=1;t<=TABLES;t++){
-    let seats='';
-    SEAT_LETTERS.forEach(seat=>{
-      const assigned=attending.find(p=>{ const k=`${snum}_${p.id}`; return tempSeating[k]&&tempSeating[k].table===t&&tempSeating[k].seat===seat; });
-      const opts=`<option value="">-</option>`+attending.map(p=>{
-        const k=`${snum}_${p.id}`;
-        const taken=tempSeating[k]&&!(tempSeating[k].table===t&&tempSeating[k].seat===seat);
-        return`<option value="${p.id}" ${assigned&&assigned.id===p.id?'selected':''} ${taken?'disabled':''}>${p.name}</option>`;
+function selAtt(num) {
+  selAttSess=num; renderAttTiles();
+  const ps=getP(), act=getAct(), r=getR(), sess=SESSIONS[num-1];
+  tmpAtt={};
+  ps.forEach(p => { const k=p.id+'_'+num; tmpAtt[k]=act[k]; });
+  document.getElementById('attTitle').textContent = `${num}회차 · ${sess.date} 출석 입력`;
+  document.getElementById('attEditor').style.display='block';
+  document.getElementById('attRows').innerHTML = ps.length===0
+    ? '<div style="padding:20px;text-align:center;color:#8a9ab0;">등록된 연수생이 없습니다.</div>'
+    : ps.map(p => {
+        const rk=p.id+'_'+num, rv=r[rk], cur=tmpAtt[rk];
+        const rt=!rv?'미응답':!rv.attend?'불참 회신':'참여 회신';
+        return `<div class="att-row" id="ar_${p.id}"><div><div class="att-name">${p.name}</div><div class="att-resp">${p.org} · ${rt}</div></div><div class="att-btns"><button class="att-btn ${cur===true?'o-on':''}" onclick="togAtt('${p.id}',${num},true)">○</button><button class="att-btn ${cur===false?'x-on':''}" onclick="togAtt('${p.id}',${num},false)">✗</button></div></div>`;
       }).join('');
-      seats+=`<div class="table-seat-row">
-        <div class="seat-letter">${seat}</div>
-        <select class="seat-select" onchange="assignSeat(${snum},${t},'${seat}',this.value)">${opts}</select>
-      </div>`;
+}
+
+function togAtt(pid, snum, v) {
+  const k=pid+'_'+snum; tmpAtt[k] = tmpAtt[k]===v ? undefined : v;
+  const btns=document.getElementById('ar_'+pid).querySelectorAll('.att-btn');
+  btns[0].className='att-btn'+(tmpAtt[k]===true?' o-on':'');
+  btns[1].className='att-btn'+(tmpAtt[k]===false?' x-on':'');
+}
+
+function saveAtt() { const a=getAct(); Object.assign(a,tmpAtt); setAct(a); toast('출석 저장 완료 ✓'); }
+
+/* 테이블 배치 */
+function renderSeatTiles() {
+  const pub=getPub();
+  document.getElementById('seatTiles').innerHTML = SESSIONS.map(sess=>`<div class="sess-tile ${selSeatSess===sess.num?'sel':''}" onclick="selSeat(${sess.num})"><div class="sess-num">${sess.num}</div><div class="sess-info"><div class="sess-date">${sess.date}</div><div class="sess-topic">${sess.topic}</div></div><span class="${pub[sess.num]?'badge-open':'badge-closed'}">${pub[sess.num]?'공개중':'미공개'}</span></div>`).join('');
+}
+
+function selSeat(num) {
+  selSeatSess=num; renderSeatTiles();
+  const seat=getSeat(), ps=getP(), sess=SESSIONS[num-1];
+  tmpSeat={};
+  ps.forEach(p => { const k=num+'_'+p.id; if(seat[k]) tmpSeat[k]={...seat[k]}; });
+  document.getElementById('seatEditor').style.display='block';
+  document.getElementById('seatTitle').textContent = `${num}회차 · ${sess.date} 배치 입력`;
+  renderPubBar(num); renderTableGrid(num);
+}
+
+function renderPubBar(num) {
+  const on=!!getPub()[num];
+  document.getElementById('pubStatus').innerHTML = `<span class="${on?'pub-dot-on':'pub-dot-off'}"></span><strong style="color:#0d1f3c;">${on?'공개 중':'미공개'}</strong><br><span style="font-size:10px;color:#8a9ab0;">${on?'연수생에게 표시됨':'저장 후 공개하세요'}</span>`;
+  const btn=document.getElementById('pubBtn');
+  btn.textContent=on?'비공개':'공개';
+  btn.style.background=on?'rgba(192,57,43,0.09)':'#0d1f3c';
+  btn.style.color=on?'#c0392b':'#e8c97a';
+}
+
+function togglePublish() {
+  if(!selSeatSess) return;
+  const pub=getPub(); pub[selSeatSess]=!pub[selSeatSess]; setPub(pub);
+  renderPubBar(selSeatSess); renderSeatTiles();
+  toast(pub[selSeatSess]?'연수생에게 공개되었습니다 ✓':'비공개로 변경되었습니다');
+}
+
+function renderTableGrid(snum) {
+  const ps=getP(), r=getR();
+  const att=ps.filter(p => { const v=r[p.id+'_'+snum]; return v&&v.attend; });
+  let html='';
+  for(let t=1; t<=9; t++) {
+    let seats='';
+    ['A','B','C','D','E'].forEach(sl => {
+      const asgn=att.find(p => { const k=snum+'_'+p.id; return tmpSeat[k]&&tmpSeat[k].table===t&&tmpSeat[k].seat===sl; });
+      const opts='<option value="">-</option>'+att.map(p => {
+        const k=snum+'_'+p.id, taken=tmpSeat[k]&&!(tmpSeat[k].table===t&&tmpSeat[k].seat===sl);
+        return `<option value="${p.id}" ${asgn&&asgn.id===p.id?'selected':''} ${taken?'disabled':''}>${p.name}</option>`;
+      }).join('');
+      seats+=`<div class="seat-row"><div class="seat-ltr">${sl}</div><select class="seat-sel" onchange="asgn(${snum},${t},'${sl}',this.value)">${opts}</select></div>`;
     });
-    html+=`<div class="table-card-admin"><div class="table-card-admin-head">테이블 ${t}</div>${seats}</div>`;
+    html+=`<div class="table-card"><div class="table-card-head">테이블 ${t}</div>${seats}</div>`;
   }
   document.getElementById('tableGrid').innerHTML=html;
 }
-function assignSeat(snum,table,seat,pid){
-  Object.keys(tempSeating).forEach(k=>{
-    if(k.startsWith(`${snum}_`)&&tempSeating[k].table===table&&tempSeating[k].seat===seat&&!pid) delete tempSeating[k];
-  });
-  if(pid){ const mk=`${snum}_${pid}`; delete tempSeating[mk]; tempSeating[mk]={table,seat}; }
+
+function asgn(snum, table, seat, pid) {
+  Object.keys(tmpSeat).forEach(k => { if(k.startsWith(snum+'_')&&tmpSeat[k].table===table&&tmpSeat[k].seat===seat&&!pid) delete tmpSeat[k]; });
+  if(pid) { const mk=snum+'_'+pid; delete tmpSeat[mk]; tmpSeat[mk]={table,seat}; }
   renderTableGrid(snum);
 }
-function saveSeating(){
-  const seating=getSeating();
-  Object.keys(seating).forEach(k=>{ if(k.startsWith(`${selectedSeatSession}_`)) delete seating[k]; });
-  Object.assign(seating,tempSeating);
-  setSeating(seating);
-  showToast('테이블 배치 저장 완료 ✓');
+
+function saveSeating() {
+  const seat=getSeat();
+  Object.keys(seat).forEach(k => { if(k.startsWith(selSeatSess+'_')) delete seat[k]; });
+  Object.assign(seat, tmpSeat); setSeat(seat); toast('테이블 배치 저장 완료 ✓');
 }
 
-/* ============================================================
-   공통 유틸
-   ============================================================ */
-function changePassword(){
-  const current  = document.getElementById('pwCurrent').value;
-  const newPw    = document.getElementById('pwNew').value;
-  const confirm  = document.getElementById('pwConfirm').value;
-  const msg      = document.getElementById('pwMsg');
-
-  if(current !== getSettings().adminPw){
-    msg.style.color = 'var(--red)';
-    msg.textContent = '현재 비밀번호가 올바르지 않습니다.';
-    return;
-  }
-  if(newPw.length < 4){
-    msg.style.color = 'var(--red)';
-    msg.textContent = '새 비밀번호는 4자리 이상이어야 합니다.';
-    return;
-  }
-  if(newPw !== confirm){
-    msg.style.color = 'var(--red)';
-    msg.textContent = '새 비밀번호가 일치하지 않습니다.';
-    return;
-  }
-
-  const s = getSettings();
-  s.adminPw = newPw;
-  setSettings(s);
-
-  document.getElementById('pwCurrent').value = '';
-  document.getElementById('pwNew').value = '';
-  document.getElementById('pwConfirm').value = '';
-  msg.style.color = 'var(--green)';
-  msg.textContent = '✓ 비밀번호가 변경되었습니다.';
-  setTimeout(()=>{ msg.textContent=''; }, 3000);
-  showToast('비밀번호 변경 완료 ✓');
+/* 응답현황 */
+function renderSummary() {
+  const ps=getP(), r=getR();
+  document.getElementById('sumHead').innerHTML='<th class="td-name" style="color:rgba(255,255,255,0.7);text-align:left;">이름</th>'+SESSIONS.map(s=>`<th>${s.num}회</th>`).join('');
+  document.getElementById('sumBody').innerHTML=ps.map(p=>{
+    const cells=SESSIONS.map(sess=>{
+      const v=r[p.id+'_'+sess.num];
+      if(!v) return '<td class="c-empty">-</td>';
+      if(!v.attend) return '<td class="c-x">✗</td>';
+      return '<td class="c-o">○</td>';
+    }).join('');
+    return `<tr><td class="td-name">${p.name}</td>${cells}</tr>`;
+  }).join('')||`<tr><td colspan="${SESSIONS.length+1}" style="padding:20px;text-align:center;color:#8a9ab0;">데이터 없음</td></tr>`;
 }
 
-
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2400);
+/* 비밀번호 변경 */
+function changePw() {
+  const cur=document.getElementById('pwCur').value, nw=document.getElementById('pwNew').value, cfm=document.getElementById('pwCfm').value;
+  const msg=document.getElementById('pwMsg');
+  if(cur!==getS().adminPw) { msg.style.color='#c0392b'; msg.textContent='현재 비밀번호가 올바르지 않습니다.'; return; }
+  if(nw.length<4) { msg.style.color='#c0392b'; msg.textContent='새 비밀번호는 4자리 이상이어야 합니다.'; return; }
+  if(nw!==cfm) { msg.style.color='#c0392b'; msg.textContent='새 비밀번호가 일치하지 않습니다.'; return; }
+  const s=getS(); s.adminPw=nw; setS(s);
+  ['pwCur','pwNew','pwCfm'].forEach(id=>document.getElementById(id).value='');
+  msg.style.color='#2d6a4f'; msg.textContent='✓ 비밀번호가 변경되었습니다.';
+  setTimeout(()=>{msg.textContent='';},3000); toast('비밀번호 변경 완료 ✓');
 }
-function showConfirm(title,desc,cb){
-  document.getElementById('confirmTitle').textContent=title;
-  document.getElementById('confirmDesc').textContent=desc;
-  document.getElementById('confirmModal').style.display='flex';
-  document.getElementById('confirmOkBtn').onclick=()=>{ closeConfirm(); cb(); };
-}
-function closeConfirm(){ document.getElementById('confirmModal').style.display='none'; }
 
-/* ============================================================
-   시작
-   ============================================================ */
-initData();
+/* 유틸 */
+function toast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+function confirm2(title, desc, cb) {
+  document.getElementById('cfmTitle').textContent=title;
+  document.getElementById('cfmDesc').textContent=desc;
+  document.getElementById('confirmOverlay').className='confirm-overlay show';
+  document.getElementById('cfmOk').onclick=()=>{closeConfirm(); cb();};
+}
+function closeConfirm() { document.getElementById('confirmOverlay').className='confirm-overlay'; }
+
+/* ─── 시작 ─── */
+window.onerror = function() { return false; };
+loadLocal();
+if(useSheets() && location.protocol !== 'file:') syncFromSheets();
+go('s-login');
 </script>
 </body>
 </html>
