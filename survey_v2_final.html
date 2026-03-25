@@ -249,7 +249,6 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
     <div class="card fadein">
       <span class="label">비밀번호</span>
       <input id="adminPwInput" class="input-field" type="password" placeholder="관리자 비밀번호" style="letter-spacing:6px;" onkeydown="if(event.key==='Enter') confirmAdmin()">
-      ``
       <div id="adminPwError" class="error-msg"></div>
       <button class="btn-primary" onclick="confirmAdmin()">로그인</button>
     </div>
@@ -544,7 +543,6 @@ async function confirmAdmin() {
   renderAdmin();
   go('s-admin');
 }
-``
 
 async function doLogout() {
   const adminSession = sessionStorage.getItem('adminSession');
@@ -559,7 +557,6 @@ async function doLogout() {
   pinInput.value = '';
   go('s-login');
 }
-``
   
 
 /* ─── 대시보드 ─── */
@@ -1057,7 +1054,6 @@ async function changePw() {
   setTimeout(() => { msg.textContent = ''; }, 3000);
   toast('비밀번호 변경 완료 ✓');
 }
-``
 
 /* 유틸 */
 function toast(msg) {
