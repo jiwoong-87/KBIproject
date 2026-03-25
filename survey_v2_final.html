@@ -546,10 +546,21 @@ async function confirmAdmin() {
 }
 ``
 
-function doLogout() {
-  CU = null; pinInput.value = '';
+async function doLogout() {
+  const adminSession = sessionStorage.getItem('adminSession');
+
+  if (adminSession) {
+    await postApi('adminLogout', { sessionToken: adminSession });
+  }
+
+  sessionStorage.removeItem('adminSession');
+
+  CU = null;
+  pinInput.value = '';
   go('s-login');
 }
+``
+  
 
 /* ─── 대시보드 ─── */
 function renderDash() {
@@ -1002,19 +1013,51 @@ function renderSummary() {
 }
 
 async function changePw() {
-  const cur=document.getElementById('pwCur').value, nw=document.getElementById('pwNew').value, cfm=document.getElementById('pwCfm').value;
-  const msg=document.getElementById('pwMsg');
-  if(cur!==getS().adminPw) { msg.style.color='#c0392b'; msg.textContent='현재 비밀번호가 올바르지 않습니다.'; return; }
-  if(nw.length<4) { msg.style.color='#c0392b'; msg.textContent='새 비밀번호는 4자리 이상이어야 합니다.'; return; }
-  if(nw!==cfm) { msg.style.color='#c0392b'; msg.textContent='새 비밀번호가 일치하지 않습니다.'; return; }
-  const s=getS(); s.adminPw=nw;
+  const cur = document.getElementById('pwCur').value.trim();
+  const nw  = document.getElementById('pwNew').value.trim();
+  const cfm = document.getElementById('pwCfm').value.trim();
+  const msg = document.getElementById('pwMsg');
+
+  if (nw.length < 4) {
+    msg.style.color = '#c0392b';
+    msg.textContent = '새 비밀번호는 4자리 이상이어야 합니다.';
+    return;
+  }
+
+  if (nw !== cfm) {
+    msg.style.color = '#c0392b';
+    msg.textContent = '새 비밀번호가 일치하지 않습니다.';
+    return;
+  }
+
+  const sessionToken = sessionStorage.getItem('adminSession');
+  if (!sessionToken) {
+    msg.style.color = '#c0392b';
+    msg.textContent = '관리자 세션이 없습니다. 다시 로그인해 주세요.';
+    return;
+  }
+
   showLoading('저장 중…');
-  await setS(s);
+  const result = await postApi('adminChangePassword', {
+    sessionToken,
+    currentPassword: cur,
+    newPassword: nw
+  });
   hideLoading();
-  ['pwCur','pwNew','pwCfm'].forEach(id=>document.getElementById(id).value='');
-  msg.style.color='#2d6a4f'; msg.textContent='✓ 비밀번호가 변경되었습니다.';
-  setTimeout(()=>{msg.textContent='';},3000); toast('비밀번호 변경 완료 ✓');
+
+  if (!result || !result.ok) {
+    msg.style.color = '#c0392b';
+    msg.textContent = result?.error || '비밀번호 변경에 실패했습니다.';
+    return;
+  }
+
+  ['pwCur','pwNew','pwCfm'].forEach(id => document.getElementById(id).value = '');
+  msg.style.color = '#2d6a4f';
+  msg.textContent = '✓ 비밀번호가 변경되었습니다.';
+  setTimeout(() => { msg.textContent = ''; }, 3000);
+  toast('비밀번호 변경 완료 ✓');
 }
+``
 
 /* 유틸 */
 function toast(msg) {
