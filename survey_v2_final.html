@@ -248,7 +248,8 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
   <div class="body-pad">
     <div class="card fadein">
       <span class="label">비밀번호</span>
-      <input id="adminPwInput" class="input-field" type="password" placeholder="초기 비밀번호: 1234" style="letter-spacing:6px;" onkeydown="if(event.key==='Enter') confirmAdmin()">
+      <input id="adminPwInput" class="input-field" type="password" placeholder="관리자 비밀번호" style="letter-spacing:6px;" onkeydown="if(event.key==='Enter') confirmAdmin()">
+      ``
       <div id="adminPwError" class="error-msg"></div>
       <button class="btn-primary" onclick="confirmAdmin()">로그인</button>
     </div>
@@ -354,6 +355,9 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
 <div class="toast" id="toast"></div>
 
 <script>
+
+  
+  
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyT5X2APYJckTus8hH-d19t5w-d2VL9e_W7kjv7v3Pj67NKcrxsodfmjnxC74hZ5Ep/exec';
 
 const SESSIONS = [
@@ -401,6 +405,27 @@ async function gas(action, data) {
   } catch(e) { return null; }
 }
 
+async function postApi(action, data) {
+  try {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 12000);
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, data }),
+      redirect: 'follow',
+      signal: ctrl.signal
+    });
+
+    clearTimeout(t);
+    return JSON.parse(await res.text());
+  } catch (e) {
+    return null;
+  }
+}
+
+  
 /* 로딩 오버레이 */
 function showLoading(msg='잠시만 기다려 주세요…') {
   let el = document.getElementById('loadingOverlay');
@@ -491,17 +516,35 @@ function goAdminLogin() {
 }
 
 async function confirmAdmin() {
-  const pw = document.getElementById('adminPwInput').value;
-  await loadFromSheets();
-  if(pw === getS().adminPw) {
-    document.getElementById('adminPwInput').value = '';
-    renderAdmin();
-    go('s-admin');
-  } else {
+  const pw = document.getElementById('adminPwInput').value.trim();
+
+  if (!pw) {
+    document.getElementById('adminPwError').textContent = '비밀번호를 입력해 주세요.';
+    return;
+  }
+
+  showLoading('관리자 인증 중...');
+  const result = await postApi('adminLogin', { password: pw });
+  hideLoading();
+
+  if (!result || !result.ok) {
     document.getElementById('adminPwError').textContent = '비밀번호가 올바르지 않습니다.';
     document.getElementById('adminPwInput').value = '';
+    return;
   }
+
+  // 관리자 세션 토큰 저장
+  sessionStorage.setItem('adminSession', result.sessionToken);
+
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminPwError').textContent = '';
+
+  // ※ 지금 단계에서는 기존 로딩 함수 재사용
+  await loadFromSheets();
+  renderAdmin();
+  go('s-admin');
 }
+``
 
 function doLogout() {
   CU = null; pinInput.value = '';
