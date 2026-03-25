@@ -72,18 +72,14 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
 .seat-card-head-icon { font-size: 18px; }
 .seat-card-head-title { font-family: 'Noto Serif KR', serif; color: #fff; font-size: 14px; font-weight: 700; }
 .seat-card-head-sub { color: rgba(255,255,255,0.45); font-size: 11px; margin-top: 1px; }
-.seat-card-body { padding: 18px; display: flex; align-items: center; gap: 20px; }
-.seat-table-circle { width: 88px; height: 88px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 2px solid rgba(201,168,76,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-.seat-table-num { font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 700; color: #e8c97a; line-height: 1; }
-.seat-table-text { font-size: 10px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+.seat-card-body { padding: 18px 16px 20px; display: flex; align-items: center; gap: 16px; }
+/* 원형 테이블 SVG 컨테이너 */
+.seat-table-svg { flex-shrink: 0; }
 .seat-info { flex: 1; }
 .seat-info-label { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 6px; }
-.seat-badge { width: 56px; height: 56px; background: #c9a84c; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif KR', serif; font-size: 30px; font-weight: 900; color: #0d1f3c; margin-bottom: 8px; }
-.seat-detail { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.5; }
-.seat-detail strong { color: #fff; }
-.seat-dots { display: flex; gap: 6px; padding: 12px 18px 16px; border-top: 1px solid rgba(255,255,255,0.07); }
-.seat-dot { width: 30px; height: 30px; border-radius: 7px; border: 1.5px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.3); }
-.seat-dot.mine { background: #c9a84c; border-color: #c9a84c; color: #0d1f3c; }
+.seat-badge { width: 52px; height: 52px; background: #c9a84c; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-family: 'Noto Serif KR', serif; font-size: 28px; font-weight: 900; color: #0d1f3c; margin-bottom: 8px; }
+.seat-detail { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+.seat-detail strong { color: #fff; font-size: 15px; }
 
 /* 이력 목록 */
 .history-item { background: #fdfcfa; border-radius: 12px; border: 1px solid #ddd8ce; margin-bottom: 10px; overflow: hidden; }
@@ -353,7 +349,7 @@ const CACHE = {p:null, r:null, s:null, seat:null, pub:null, act:null};
 
 function getP()   { return CACHE.p    || []; }
 function getR()   { return CACHE.r    || {}; }
-function getS()   { return CACHE.s    || {currentSession:null, closedSessions:[], adminPw:'1234'}; }
+function getS()   { return CACHE.s    || {openSessions:[], closedSessions:[], adminPw:'1234'}; }
 function getSeat(){ return CACHE.seat || {}; }
 function getPub() { return CACHE.pub  || {}; }
 function getAct() { return CACHE.act  || {}; }
@@ -505,66 +501,149 @@ function renderSeatNotice() {
   }
   if(!found) { area.innerHTML=''; return; }
   const {sess, seat:s} = found;
-  const dots = ['A','B','C','D','E'].map(x=>`<div class="seat-dot ${x===s.seat?'mine':''}">${x}</div>`).join('');
+
+  // 원형 테이블 SVG (5개 좌석 A~E를 원주에 배치)
+  const SEATS = ['A','B','C','D','E'];
+  const cx=70, cy=70, tableR=28, seatR=14, outerR=54;
+  // A=상단, B=우상, C=우하, D=좌하, E=좌상 (시계방향)
+  const angles = [-90, -18, 54, 126, 198]; // 도
+  const seatCircles = SEATS.map((ltr, i) => {
+    const rad = angles[i] * Math.PI / 180;
+    const sx = cx + outerR * Math.cos(rad);
+    const sy = cy + outerR * Math.sin(rad);
+    const isMine = ltr === s.seat;
+    return `
+      <circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${seatR}" fill="${isMine?'#c9a84c':'rgba(255,255,255,0.08)'}" stroke="${isMine?'#e8c97a':'rgba(255,255,255,0.2)'}" stroke-width="${isMine?2:1}"/>
+      <text x="${sx.toFixed(1)}" y="${sy.toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-family="'Noto Serif KR',serif" font-size="12" font-weight="700" fill="${isMine?'#0d1f3c':'rgba(255,255,255,0.35)'}">${ltr}</text>`;
+  }).join('');
+
+  const tableSvg = `
+    <svg width="140" height="140" viewBox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+      <!-- 연결선 -->
+      ${SEATS.map((_,i) => {
+        const rad = angles[i] * Math.PI / 180;
+        const sx = cx + (outerR - seatR) * Math.cos(rad);
+        const sy = cy + (outerR - seatR) * Math.sin(rad);
+        const tx = cx + tableR * Math.cos(rad);
+        const ty = cy + tableR * Math.sin(rad);
+        return `<line x1="${tx.toFixed(1)}" y1="${ty.toFixed(1)}" x2="${sx.toFixed(1)}" y2="${sy.toFixed(1)}" stroke="rgba(255,255,255,0.1)" stroke-width="1"/>`;
+      }).join('')}
+      <!-- 테이블 원 -->
+      <circle cx="${cx}" cy="${cy}" r="${tableR}" fill="rgba(201,168,76,0.15)" stroke="rgba(201,168,76,0.5)" stroke-width="1.5"/>
+      <text x="${cx}" y="${cy-5}" text-anchor="middle" dominant-baseline="central" font-family="'Noto Serif KR',serif" font-size="14" font-weight="700" fill="#e8c97a">${s.table}</text>
+      <text x="${cx}" y="${cy+9}" text-anchor="middle" dominant-baseline="central" font-family="'Noto Sans KR',sans-serif" font-size="8" fill="rgba(255,255,255,0.4)">테이블</text>
+      <!-- 좌석들 -->
+      ${seatCircles}
+    </svg>`;
+
   area.innerHTML = `
     <div class="seat-card fadein">
-      <div class="seat-card-head"><span class="seat-card-head-icon">🪑</span><div><div class="seat-card-head-title">${sess.num}회차 테이블 배치 안내</div><div class="seat-card-head-sub">${sess.date} · ${sess.topic}</div></div></div>
-      <div class="seat-card-body">
-        <div class="seat-table-circle"><div class="seat-table-num">${s.table}</div><div class="seat-table-text">테이블</div></div>
-        <div class="seat-info"><div class="seat-info-label">배정 좌석</div><div class="seat-badge">${s.seat}</div><div class="seat-detail"><strong>${s.table}번 테이블</strong> · <strong>${s.seat}석</strong><br>뱅커스클럽 16층</div></div>
+      <div class="seat-card-head">
+        <span class="seat-card-head-icon">🪑</span>
+        <div>
+          <div class="seat-card-head-title">${sess.num}회차 테이블 배치 안내</div>
+          <div class="seat-card-head-sub">${sess.date} · ${sess.topic}</div>
+        </div>
       </div>
-      <div class="seat-dots">${dots}</div>
+      <div class="seat-card-body">
+        <div class="seat-table-svg">${tableSvg}</div>
+        <div class="seat-info">
+          <div class="seat-info-label">나의 배정 좌석</div>
+          <div class="seat-badge">${s.seat}</div>
+          <div class="seat-detail">
+            <strong>${s.table}번 테이블 ${s.seat}석</strong><br>
+            <span style="font-size:11px;color:rgba(255,255,255,0.5);">뱅커스클럽 16층</span>
+          </div>
+        </div>
+      </div>
     </div>`;
 }
 
 function renderActive() {
   const area = document.getElementById('activeArea');
-  const ss = getS(), cn = ss.currentSession;
-  if(!cn) { area.innerHTML='<div class="no-active">현재 접수 중인 회차가 없습니다.<br>다음 안내를 기다려 주세요.</div>'; return; }
-  const sess = SESSIONS[cn-1], r = getR()[CU.id+'_'+cn];
-  tmpResp = r ? {attend: r.attend} : {};
-  const yOn = tmpResp.attend===true, nOn = tmpResp.attend===false;
-  area.innerHTML = `
-    <div class="active-card fadein">
-      <div class="active-card-inner">
-        <div class="session-top">
-          <div class="session-num">${cn}</div>
-          <div><div class="session-date">${sess.date}${sess.optional?' · 선택':''}</div><div class="session-topic">${sess.topic}</div>${sess.sub?`<div style="font-size:12px;color:#4a5568;">${sess.sub}</div>`:''}<div class="session-speaker">${sess.speaker}</div></div>
+  const ss = getS();
+  // openSessions 배열 지원 (이전 currentSession 단일값도 호환)
+  let openNums = [];
+  if(Array.isArray(ss.openSessions)) openNums = ss.openSessions;
+  else if(ss.currentSession) openNums = [ss.currentSession];
+
+  if(openNums.length === 0) {
+    area.innerHTML='<div class="no-active">현재 접수 중인 회차가 없습니다.<br>다음 안내를 기다려 주세요.</div>';
+    return;
+  }
+
+  const r = getR();
+  area.innerHTML = openNums.map(cn => {
+    const sess = SESSIONS[cn-1];
+    if(!sess) return '';
+    const rv = r[CU.id+'_'+cn];
+    const resp = rv ? {attend: rv.attend} : {};
+    const yOn = resp.attend===true, nOn = resp.attend===false;
+    return `
+      <div class="active-card fadein" style="margin-bottom:12px;">
+        <div class="active-card-inner">
+          <div class="session-top">
+            <div class="session-num">${cn}</div>
+            <div><div class="session-date">${sess.date}${sess.optional?' · 선택':''}</div><div class="session-topic">${sess.topic}</div>${sess.sub?`<div style="font-size:12px;color:#4a5568;">${sess.sub}</div>`:''}<div class="session-speaker">${sess.speaker}</div></div>
+          </div>
+          <div class="divider"></div>
+          <div class="sub-label">참여 여부를 선택해 주세요</div>
+          <div class="attend-btns">
+            <button class="attend-btn ${yOn?'yes':''}" id="btnY_${cn}" onclick="setAttend(${cn},true)">✓ 참여</button>
+            <button class="attend-btn ${nOn?'no':''}" id="btnN_${cn}" onclick="setAttend(${cn},false)">✗ 불참</button>
+          </div>
+          <button class="btn-save" id="btnSave_${cn}" onclick="saveResp(${cn})" ${resp.attend!==undefined?'':'disabled'}>${rv?'회신 수정하기':'회신 저장하기'}</button>
         </div>
-        <div class="divider"></div>
-        <div class="sub-label">참여 여부를 선택해 주세요</div>
-        <div class="attend-btns">
-          <button class="attend-btn ${yOn?'yes':''}" id="btnY" onclick="setAttend(true)">✓ 참여</button>
-          <button class="attend-btn ${nOn?'no':''}" id="btnN" onclick="setAttend(false)">✗ 불참</button>
-        </div>
-        <button class="btn-save" id="btnSave" onclick="saveResp(${cn})" ${tmpResp.attend!==undefined?'':'disabled'}>${r?'회신 수정하기':'회신 저장하기'}</button>
-      </div>
-    </div>`;
+      </div>`;
+  }).join('');
 }
 
-function setAttend(v) {
-  tmpResp.attend = v;
-  const y=document.getElementById('btnY'), n=document.getElementById('btnN'), s=document.getElementById('btnSave');
+function setAttend(cn, v) {
+  const y=document.getElementById('btnY_'+cn), n=document.getElementById('btnN_'+cn), s=document.getElementById('btnSave_'+cn);
   if(y) y.className='attend-btn'+(v?' yes':'');
   if(n) n.className='attend-btn'+(!v?' no':'');
   if(s) s.disabled = false;
+  // tmpResp를 회차별로 관리
+  if(!tmpResp) tmpResp = {};
+  tmpResp[cn] = {attend: v};
 }
 
 async function saveResp(cn) {
+  const attend = tmpResp?.[cn]?.attend;
+  if(attend === undefined) { toast('참여 여부를 먼저 선택해 주세요'); return; }
   showLoading('저장 중…');
-  const r = getR(); r[CU.id+'_'+cn] = {attend:tmpResp.attend, ts:Date.now()};
+  const r = getR(); r[CU.id+'_'+cn] = {attend, ts:Date.now()};
   await setR(r);
   hideLoading();
-  toast('회신이 저장되었습니다 ✓'); renderDash();
+  // 참여 선택 시 배치 안내 메시지
+  if(attend) {
+    showNotice('✓ 회신이 저장되었습니다\n참석 전날 배정 좌석을 확인할 수 있습니다.');
+  } else {
+    toast('회신이 저장되었습니다 ✓');
+  }
+  renderDash();
+}
+
+function showNotice(msg) {
+  // 두 줄 토스트 (기존 toast보다 크게)
+  const el = document.getElementById('toast');
+  el.innerHTML = msg.replace('\n','<br>');
+  el.style.whiteSpace = 'normal';
+  el.style.textAlign = 'center';
+  el.style.maxWidth = '280px';
+  el.classList.add('show');
+  setTimeout(()=>{ el.classList.remove('show'); el.style.whiteSpace='nowrap'; el.style.textAlign=''; el.style.maxWidth=''; }, 3500);
 }
 
 function renderHistory() {
   const area = document.getElementById('historyArea');
-  const r=getR(), act=getAct(), ss=getS(), cn=ss.currentSession;
+  const r=getR(), act=getAct(), ss=getS();
+  const openNums = Array.isArray(ss.openSessions) ? ss.openSessions : (ss.currentSession ? [ss.currentSession] : []);
   area.innerHTML = SESSIONS.map(sess => {
     const rk = CU.id+'_'+sess.num, rv = r[rk], av = act[rk];
     const isClosed = ss.closedSessions?.includes(sess.num);
-    const isFuture = sess.num!==cn && !isClosed;
+    const isOpen = openNums.includes(sess.num);
+    const isFuture = !isOpen && !isClosed;
     let chip='', cls='';
     if(!rv) { chip=isFuture?`<span class="chip chip-future">-</span>`:`<span class="chip chip-pending">미응답</span>`; cls=isFuture?'future':'pending'; }
     else if(!rv.attend) { chip=`<span class="chip chip-absent">✗ 불참</span>`; cls='absent'; }
@@ -631,27 +710,54 @@ function delP(id) {
 /* 회차 설정 */
 function renderSessTiles() {
   const ss=getS();
+  // 이전 단일값 호환
+  let openNums = Array.isArray(ss.openSessions) ? ss.openSessions : (ss.currentSession ? [ss.currentSession] : []);
   document.getElementById('sessTiles').innerHTML = SESSIONS.map(sess=>{
-    const isC=ss.currentSession===sess.num, isCl=ss.closedSessions?.includes(sess.num);
-    const badge=isCl?`<span class="badge-closed">마감</span>`:isC?`<span class="badge-open">접수중</span>`:`<span class="badge-closed">대기</span>`;
-    return `<div class="sess-tile ${isC?'sel':''}" onclick="setCurrentSess(${sess.num})"><div class="sess-num">${sess.num}</div><div class="sess-info"><div class="sess-date">${sess.date}</div><div class="sess-topic">${sess.topic}</div></div>${badge}</div>`;
+    const isOpen = openNums.includes(sess.num);
+    const isClosed = ss.closedSessions?.includes(sess.num);
+    const badge = isClosed
+      ? `<span class="badge-closed">마감</span>`
+      : isOpen
+        ? `<span class="badge-open">접수중 ✓</span>`
+        : `<span class="badge-closed">대기</span>`;
+    return `<div class="sess-tile ${isOpen?'sel':''}" onclick="toggleSess(${sess.num})">
+      <div class="sess-num">${sess.num}</div>
+      <div class="sess-info"><div class="sess-date">${sess.date}</div><div class="sess-topic">${sess.topic}</div></div>
+      ${badge}
+    </div>`;
   }).join('');
 }
 
-async function setCurrentSess(num) {
-  const ss=getS(); ss.currentSession = ss.currentSession===num ? null : num;
+async function toggleSess(num) {
+  const ss = getS();
+  if(!Array.isArray(ss.openSessions)) ss.openSessions = ss.currentSession ? [ss.currentSession] : [];
+  if(!ss.closedSessions) ss.closedSessions = [];
+  // 마감된 회차는 다시 열 수 없음
+  if(ss.closedSessions.includes(num)) { toast('이미 마감된 회차입니다'); return; }
+  const idx = ss.openSessions.indexOf(num);
+  if(idx >= 0) {
+    ss.openSessions.splice(idx, 1);
+  } else {
+    ss.openSessions.push(num);
+    ss.openSessions.sort((a,b)=>a-b);
+  }
+  ss.currentSession = ss.openSessions.length > 0 ? ss.openSessions[0] : null; // 하위 호환
   showLoading('저장 중…');
   await setS(ss);
   hideLoading();
-  renderSessTiles(); toast(ss.currentSession ? `${num}회차 접수 시작` : '접수 마감');
+  renderSessTiles();
+  toast(idx < 0 ? `${num}회차 접수 시작` : `${num}회차 접수 닫힘`);
 }
 
 function closeSession() {
-  const ss=getS(); if(!ss.currentSession) { toast('열린 회차가 없습니다'); return; }
-  confirm2('접수 마감', `${ss.currentSession}회차 접수를 마감하시겠습니까?`, async () => {
+  const ss=getS();
+  const openNums = Array.isArray(ss.openSessions) ? ss.openSessions : (ss.currentSession ? [ss.currentSession] : []);
+  if(!openNums.length) { toast('열린 회차가 없습니다'); return; }
+  confirm2('접수 마감', `현재 열린 ${openNums.join(', ')}회차 접수를 모두 마감하시겠습니까?`, async () => {
     if(!ss.closedSessions) ss.closedSessions=[];
-    if(!ss.closedSessions.includes(ss.currentSession)) ss.closedSessions.push(ss.currentSession);
-    ss.currentSession=null;
+    openNums.forEach(n => { if(!ss.closedSessions.includes(n)) ss.closedSessions.push(n); });
+    ss.openSessions = [];
+    ss.currentSession = null;
     showLoading('저장 중…');
     await setS(ss);
     hideLoading();
