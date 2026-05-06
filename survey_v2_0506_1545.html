@@ -417,9 +417,14 @@ async function gas(action, data) {
     const url = new URL(GAS_URL);
     url.searchParams.set('action', action);
     if(data !== undefined) url.searchParams.set('data', JSON.stringify(data));
+    url.searchParams.set('_t', Date.now()); // 브라우저 캐시 방지
     const ctrl = new AbortController();
     const t = setTimeout(()=>ctrl.abort(), 12000);
-    const res = await fetch(url.toString(), {redirect:'follow', signal:ctrl.signal});
+    const res = await fetch(url.toString(), {
+      redirect: 'follow',
+      signal: ctrl.signal,
+      cache: 'no-store', // 캐시 완전 비활성화
+    });
     clearTimeout(t);
     return JSON.parse(await res.text());
   } catch(e) { return null; }
