@@ -234,6 +234,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
       <div class="hint">등록된 번호가 없거나 문의사항은<br>담당자에게 연락해 주세요.</div>
     </div>
     <button onclick="goAdminLogin()" style="display:block;width:100%;text-align:center;margin-top:20px;font-size:13px;color:#8a9ab0;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'Noto Sans KR',sans-serif;">관리자 페이지</button>
+    <div style="text-align:center;margin-top:16px;font-size:10px;color:#ccc;">v20250506-DEBUG</div>
   </div>
 </div>
 
@@ -524,29 +525,31 @@ async function confirmAdmin() {
   if(!pw) { document.getElementById('adminPwError').textContent = '비밀번호를 입력해 주세요.'; return; }
 
   showLoading('확인 중…');
-  // 설정만 개별로 불러오기 — 전체 로드보다 빠르고 안정적
   const s = await gas('getSettings');
   hideLoading();
 
-  // Sheets 연결 실패 시 명확한 안내
-  if(!s || typeof s !== 'object' || s.error) {
-    document.getElementById('adminPwError').textContent = '서버 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.';
+  // 디버그: 브라우저 콘솔에서 확인
+  console.log('[DEBUG] getSettings 결과:', JSON.stringify(s));
+  console.log('[DEBUG] adminPw:', s && s.adminPw);
+
+  if(!s || typeof s !== 'object' || Array.isArray(s) || s.error) {
+    document.getElementById('adminPwError').textContent = '서버 연결에 실패했습니다. 콘솔(F12)을 확인해 주세요.';
     return;
   }
 
-  // 캐시 업데이트
   CACHE.s = s;
-
   const storedPw = s.adminPw || '1234';
+
+  console.log('[DEBUG] 입력 비밀번호:', pw, '/ 저장된 비밀번호:', storedPw);
+
   if(pw === storedPw) {
     document.getElementById('adminPwInput').value = '';
     document.getElementById('adminPwError').textContent = '';
-    // 관리자 진입 시 전체 데이터 로드
     await loadFromSheets();
     renderAdmin();
     go('s-admin');
   } else {
-    document.getElementById('adminPwError').textContent = '비밀번호가 올바르지 않습니다.';
+    document.getElementById('adminPwError').textContent = `비밀번호가 올바르지 않습니다. (저장값: ${storedPw})`;
     document.getElementById('adminPwInput').value = '';
   }
 }
