@@ -1,12 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
-  <meta property="og:title" content="2026 금융회사 사외이사 연수 프로그램">
-<meta property="og:description" content="연수생 참여 및 일정 안내 페이지입니다. 접속하시어 확인 부탁드립니다.">
-<meta property="og:image" content="https://jiwoong-87.github.io/KBIproject/logo.png">
-<meta property="og:url" content="https://jiwoong-87.github.io/KBIproject/">
-  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>2026 금융회사 사외이사 프로그램</title>
@@ -102,8 +96,8 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
 .replied-chip.n { background: rgba(192,57,43,0.09); color: #c0392b; }
 .chevron { font-size: 12px; color: #8a9ab0; transition: transform 0.25s; }
 .chevron.open { transform: rotate(180deg); }
-.replied-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-.replied-body.open { max-height: 300px; }
+.replied-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+.replied-body.open { max-height: 600px; }
 .replied-body-inner { padding: 0 16px 16px; border-top: 1px solid #ddd8ce; padding-top: 14px; }
 .history-item { background: #fdfcfa; border-radius: 12px; border: 1px solid #ddd8ce; margin-bottom: 10px; overflow: hidden; }
 .history-item.attend { border-left: 3px solid #2d6a4f; }
@@ -240,6 +234,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
       <div class="hint">등록된 번호가 없거나 문의사항은<br>담당자에게 연락해 주세요.</div>
     </div>
     <button onclick="goAdminLogin()" style="display:block;width:100%;text-align:center;margin-top:20px;font-size:13px;color:#8a9ab0;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'Noto Sans KR',sans-serif;">관리자 페이지</button>
+    <div style="text-align:center;margin-top:16px;font-size:10px;color:#ccc;">v20250506-DEBUG</div>
   </div>
 </div>
 
@@ -254,7 +249,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
   <div class="body-pad">
     <div class="card fadein">
       <span class="label">비밀번호</span>
-      <input id="adminPwInput" class="input-field" type="password" placeholder="관리자 비밀번호" style="letter-spacing:6px;" onkeydown="if(event.key==='Enter') confirmAdmin()">
+      <input id="adminPwInput" class="input-field" type="password" placeholder="초기 비밀번호: 1234" style="letter-spacing:6px;" onkeydown="if(event.key==='Enter') confirmAdmin()">
       <div id="adminPwError" class="error-msg"></div>
       <button class="btn-primary" onclick="confirmAdmin()">로그인</button>
     </div>
@@ -360,10 +355,7 @@ body { font-family: 'Noto Sans KR', sans-serif; background: #f7f4ee; color: #1a1
 <div class="toast" id="toast"></div>
 
 <script>
-
-  
-  
-const GAS_URL = 'https://script.google.com/macros/s/AKfycbyyT5X2APYJckTus8hH-d19t5w-d2VL9e_W7kjv7v3Pj67NKcrxsodfmjnxC74hZ5Ep/exec';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyH2eCNrhKqt6o41q-QGIQRAYiQJtortqfdFyc7-ugUwRF5Nt5-Drbea1vbUsoMjEqO/exec';
 
 const SESSIONS = [
   {num:1, date:"4.28(화)", topic:"국내 금융산업 현안과 과제", sub:"지배구조 선진화", speaker:"이찬진 원장 (금융감독원)", optional:false},
@@ -375,7 +367,8 @@ const SESSIONS = [
   {num:7, date:"6.9(화)", topic:"금융회사 경영전략", sub:"", speaker:"윤종규 前회장 (前 KB금융)", optional:false},
   {num:8, date:"6.16(화)", topic:"금융회사 리스크관리", sub:"위험관리위원회", speaker:"정완호 대표 (한국리스크관리)", optional:false},
   {num:9, date:"6.23(화)", topic:"금융회사 A·I, 디지털 거버넌스", sub:"", speaker:"이효섭 실장 (자본시장연구원)", optional:false},
-  {num:10, date:"6.30(화)", topic:"금융회사 이사회 등 지배구조 감독방향", sub:"", speaker:"금융감독원", optional:false}
+  {num:10, date:"6.30(화)", topic:"금융회사 이사회 등 지배구조 감독방향", sub:"", speaker:"금융감독원", optional:false},
+  {num:11, date:"6.12(금)", topic:"만찬 네트워크", sub:"웨스틴 조선 서울", speaker:"선택 참여", optional:true}
 ];
 
 /* ─── 저장소: Google Sheets 전용 ─── */
@@ -384,53 +377,69 @@ const CACHE = {p:null, r:null, s:null, seat:null, pub:null, act:null};
 
 function getP()   { return CACHE.p    || []; }
 function getR()   { return CACHE.r    || {}; }
-function getS()   { return CACHE.s    || {openSessions:[], closedSessions:[], adminPw:'1234'}; }
+function getS() {
+  const s = CACHE.s || {};
+  // adminPw, openSessions, closedSessions 항상 보장
+  return {
+    openSessions:   Array.isArray(s.openSessions)   ? s.openSessions   : (s.currentSession ? [s.currentSession] : []),
+    closedSessions: Array.isArray(s.closedSessions) ? s.closedSessions : [],
+    adminPw:        s.adminPw || '1234',
+    currentSession: s.currentSession || null,
+  };
+}
 function getSeat(){ return CACHE.seat || {}; }
 function getPub() { return CACHE.pub  || {}; }
 function getAct() { return CACHE.act  || {}; }
 
-/* 쓰기: Sheets에 바로 저장 (await 필수) */
-async function setP(v)   { CACHE.p    = v; await gas('setParticipants',   v); }
-async function setR(v)   { CACHE.r    = v; await gas('setResponses',      v); }
-async function setS(v)   { CACHE.s    = v; await gas('setSettings',       v); }
-async function setSeat(v){ CACHE.seat = v; await gas('setSeating',        v); }
-async function setPub(v) { CACHE.pub  = v; await gas('setSeatingPublished',v); }
-async function setAct(v) { CACHE.act  = v; await gas('setActual',         v); }
+/* 쓰기: Sheets에 바로 저장, 결과 반환 */
+async function setP(v)   { CACHE.p    = v; return await gas('setParticipants',    v); }
+async function setSeat(v){ CACHE.seat = v; return await gas('setSeating',         v); }
+async function setPub(v) { CACHE.pub  = v; return await gas('setSeatingPublished',v); }
+
+/* setS: 항상 adminPw를 포함해서 저장 — 덮어써지지 않도록 보장 */
+async function setS(v) {
+  // adminPw가 없으면 캐시 또는 기본값에서 가져옴
+  const adminPw = v.adminPw || (CACHE.s && CACHE.s.adminPw) || '1234';
+  const toSave = { ...v, adminPw };
+  CACHE.s = toSave;
+  return await gas('setSettings', toSave);
+}
+
+/* 저장 성공 여부 확인 헬퍼 */
+function isSaveOk(result) {
+  return result && result.ok === true;
+}
+
+/* 응답/출석은 개별 행 upsert — 동시 저장 충돌 방지 */
+async function upsertResponse(key, attend, ts) {
+  if(!CACHE.r) CACHE.r = {};
+  CACHE.r[key] = {attend, ts};
+  await gas('upsertResponse', {key, attend, ts});
+}
+async function upsertActual(key, attended) {
+  if(!CACHE.act) CACHE.act = {};
+  CACHE.act[key] = attended;
+  await gas('upsertActual', {key, attended});
+}
 
 async function gas(action, data) {
   try {
     const url = new URL(GAS_URL);
     url.searchParams.set('action', action);
     if(data !== undefined) url.searchParams.set('data', JSON.stringify(data));
+    url.searchParams.set('_t', Date.now()); // 브라우저 캐시 방지
     const ctrl = new AbortController();
     const t = setTimeout(()=>ctrl.abort(), 12000);
-    const res = await fetch(url.toString(), {redirect:'follow', signal:ctrl.signal});
+    const res = await fetch(url.toString(), {
+      redirect: 'follow',
+      signal: ctrl.signal,
+      cache: 'no-store', // 캐시 완전 비활성화
+    });
     clearTimeout(t);
     return JSON.parse(await res.text());
   } catch(e) { return null; }
 }
 
-async function postApi(action, data) {
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 12000);
-
-    const res = await fetch(GAS_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ action, data }),
-      redirect: 'follow',
-      signal: ctrl.signal
-    });
-
-    clearTimeout(t);
-    return JSON.parse(await res.text());
-  } catch (e) {
-    return null;
-  }
-}
-
-  
 /* 로딩 오버레이 */
 function showLoading(msg='잠시만 기다려 주세요…') {
   let el = document.getElementById('loadingOverlay');
@@ -522,48 +531,42 @@ function goAdminLogin() {
 
 async function confirmAdmin() {
   const pw = document.getElementById('adminPwInput').value.trim();
+  if(!pw) { document.getElementById('adminPwError').textContent = '비밀번호를 입력해 주세요.'; return; }
 
-  if (!pw) {
-    document.getElementById('adminPwError').textContent = '비밀번호를 입력해 주세요.';
-    return;
-  }
-
-  showLoading('관리자 인증 중...');
-  const result = await postApi('adminLogin', { password: pw });
+  showLoading('확인 중…');
+  const s = await gas('getSettings');
   hideLoading();
 
-  if (!result || !result.ok) {
-    document.getElementById('adminPwError').textContent = '비밀번호가 올바르지 않습니다.';
-    document.getElementById('adminPwInput').value = '';
+  // 디버그: 브라우저 콘솔에서 확인
+  console.log('[DEBUG] getSettings 결과:', JSON.stringify(s));
+  console.log('[DEBUG] adminPw:', s && s.adminPw);
+
+  if(!s || typeof s !== 'object' || Array.isArray(s) || s.error) {
+    document.getElementById('adminPwError').textContent = '서버 연결에 실패했습니다. 콘솔(F12)을 확인해 주세요.';
     return;
   }
 
-  // 관리자 세션 토큰 저장
-  sessionStorage.setItem('adminSession', result.sessionToken);
+  CACHE.s = s;
+  const storedPw = s.adminPw || '1234';
 
-  document.getElementById('adminPwInput').value = '';
-  document.getElementById('adminPwError').textContent = '';
+  console.log('[DEBUG] 입력 비밀번호:', pw, '/ 저장된 비밀번호:', storedPw);
 
-  // ※ 지금 단계에서는 기존 로딩 함수 재사용
-  await loadFromSheets();
-  renderAdmin();
-  go('s-admin');
+  if(pw === storedPw) {
+    document.getElementById('adminPwInput').value = '';
+    document.getElementById('adminPwError').textContent = '';
+    await loadFromSheets();
+    renderAdmin();
+    go('s-admin');
+  } else {
+    document.getElementById('adminPwError').textContent = `비밀번호가 올바르지 않습니다. (저장값: ${storedPw})`;
+    document.getElementById('adminPwInput').value = '';
+  }
 }
 
-async function doLogout() {
-  const adminSession = sessionStorage.getItem('adminSession');
-
-  if (adminSession) {
-    await postApi('adminLogout', { sessionToken: adminSession });
-  }
-
-  sessionStorage.removeItem('adminSession');
-
-  CU = null;
-  pinInput.value = '';
+function doLogout() {
+  CU = null; pinInput.value = '';
   go('s-login');
 }
-  
 
 /* ─── 대시보드 ─── */
 function renderDash() {
@@ -642,6 +645,82 @@ function renderSeatNotice() {
     </div>`;
 }
 
+/* 5회차 세부 일정 HTML */
+function getSession5Schedule() {
+  return `
+    <div style="margin:12px 0 4px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);border-radius:10px;overflow:hidden;">
+      <div style="background:rgba(201,168,76,0.15);padding:8px 12px;font-size:11px;font-weight:700;color:#7a5f1a;letter-spacing:0.05em;">📋 세부 일정 — 엘리시안 강촌 CC</div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead>
+          <tr style="background:rgba(201,168,76,0.1);">
+            <th style="padding:6px 10px;text-align:left;color:#4a5568;font-weight:600;border-bottom:1px solid rgba(201,168,76,0.2);">구 분</th>
+            <th style="padding:6px 8px;text-align:center;color:#4a5568;font-weight:600;border-bottom:1px solid rgba(201,168,76,0.2);">시 간</th>
+            <th style="padding:6px 8px;text-align:left;color:#4a5568;font-weight:600;border-bottom:1px solid rgba(201,168,76,0.2);">주요 내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(201,168,76,0.15);">
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">도 착</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">~ 06:20</td>
+            <td style="padding:7px 8px;color:#4a5568;">엘리시안 강촌 CC<br><span style="font-size:10px;color:#8a9ab0;">개별 이동 / 버스 이용 가능 (~04:40, 금융연수원)</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(201,168,76,0.15);">
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">환복·조찬</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">06:20~07:15</td>
+            <td style="padding:7px 8px;color:#4a5568;">클럽하우스 내부 룸<br><span style="font-size:10px;color:#8a9ab0;">개별 메뉴</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(201,168,76,0.15);">
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">체력단련</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">07:15~12:30</td>
+            <td style="padding:7px 8px;color:#4a5568;">Tee-off 07:19~<br><span style="font-size:10px;color:#8a9ab0;">3개 팀 동시 시작</span></td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(201,168,76,0.15);">
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">정비·환복</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">12:30~13:00</td>
+            <td style="padding:7px 8px;color:#4a5568;">—</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">중식·시상식</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">13:00~14:00</td>
+            <td style="padding:7px 8px;color:#4a5568;">클럽하우스 내 룸<br><span style="font-size:10px;color:#8a9ab0;">전골 등 단체 메뉴</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+
+/* 11회차 세부 일정 HTML */
+function getSession11Schedule() {
+  return `
+    <div style="margin:12px 0 4px;background:rgba(13,31,60,0.04);border:1px solid rgba(13,31,60,0.15);border-radius:10px;overflow:hidden;">
+      <div style="background:rgba(13,31,60,0.08);padding:8px 12px;font-size:11px;font-weight:700;color:#1a3260;letter-spacing:0.05em;">📋 세부 일정 — 웨스틴 조선 서울</div>
+      <div style="padding:7px 12px 6px;font-size:11px;color:#4a5568;border-bottom:1px solid rgba(13,31,60,0.08);">
+        📍 서울 중구 소공동 &nbsp;|&nbsp; 🕔 17:00 ~ 20:00 (3hr)
+      </div>
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead>
+          <tr style="background:rgba(13,31,60,0.05);">
+            <th style="padding:6px 10px;text-align:left;color:#4a5568;font-weight:600;border-bottom:1px solid rgba(13,31,60,0.1);">구 분</th>
+            <th style="padding:6px 8px;text-align:center;color:#4a5568;font-weight:600;border-bottom:1px solid rgba(13,31,60,0.1);">시 간</th>
+            <th style="padding:6px 8px;text-align:left;color:#4a5568;font-weight:600;border-bottom:1px solid rgba(13,31,60,0.1);">주요 내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid rgba(13,31,60,0.08);">
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">특 강</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">17:00~18:00</td>
+            <td style="padding:7px 8px;color:#4a5568;">소통, 리더십 특강</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px;font-weight:600;color:#0d1f3c;white-space:nowrap;">만 찬</td>
+            <td style="padding:7px 8px;text-align:center;color:#4a5568;white-space:nowrap;">18:00~20:00</td>
+            <td style="padding:7px 8px;color:#4a5568;">양식 코스<br><span style="font-size:10px;color:#8a9ab0;">건배사(원장님), 사외이사 소회 등</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>`;
+}
+
 function renderActive() {
   const area = document.getElementById('activeArea');
   const ss = getS();
@@ -660,7 +739,10 @@ function renderActive() {
     if(!sess) return '';
     const rv = r[CU.id+'_'+cn];
 
-    // ── 이미 회신한 경우: 접힌 카드 ──
+    // 5회차 또는 11회차 일정표
+    const scheduleHtml = cn === 5 ? getSession5Schedule() : cn === 11 ? getSession11Schedule() : '';
+
+    // ── 이미 회신한 경우: 기본 열림 (접수중이므로) ──
     if(rv && rv.attend !== undefined) {
       const isAttend = rv.attend === true;
       const chipTxt = isAttend ? '✓ 참여' : '✗ 불참';
@@ -676,11 +758,12 @@ function renderActive() {
             </div>
             <div class="replied-status">
               <span class="replied-chip ${chipCls}">${chipTxt}</span>
-              <span class="chevron" id="chev_${cn}">▼</span>
+              <span class="chevron open" id="chev_${cn}">▼</span>
             </div>
           </div>
-          <div class="replied-body" id="rb_${cn}">
+          <div class="replied-body open" id="rb_${cn}">
             <div class="replied-body-inner">
+              ${scheduleHtml}
               <div class="sub-label" style="margin-bottom:10px;">회신 수정</div>
               <div class="attend-btns">
                 <button class="attend-btn ${isAttend?'yes':''}" id="btnY_${cn}" onclick="setAttend(${cn},true)">✓ 참여</button>
@@ -701,7 +784,8 @@ function renderActive() {
             <div><div class="session-date">${sess.date}${sess.optional?' · 선택':''}</div><div class="session-topic">${sess.topic}</div>${sess.sub?`<div style="font-size:12px;color:#4a5568;">${sess.sub}</div>`:''}<div class="session-speaker">${sess.speaker}</div></div>
           </div>
           <div class="divider"></div>
-          <div class="sub-label">참여 여부를 선택해 주세요</div>
+          ${scheduleHtml}
+          <div class="sub-label" style="margin-top:${cn===5||cn===11?'12px':'0'};">참여 여부를 선택해 주세요</div>
           <div class="attend-btns">
             <button class="attend-btn" id="btnY_${cn}" onclick="setAttend(${cn},true)">✓ 참여</button>
             <button class="attend-btn" id="btnN_${cn}" onclick="setAttend(${cn},false)">✗ 불참</button>
@@ -734,10 +818,10 @@ async function saveResp(cn) {
   const attend = tmpResp?.[cn]?.attend;
   if(attend === undefined) { toast('참여 여부를 먼저 선택해 주세요'); return; }
   showLoading('저장 중…');
-  const r = getR(); r[CU.id+'_'+cn] = {attend, ts:Date.now()};
-  await setR(r);
+  const key = CU.id+'_'+cn;
+  const ts = Date.now();
+  await upsertResponse(key, attend, ts);
   hideLoading();
-  // 참여 선택 시 배치 안내 메시지
   if(attend) {
     showNotice('✓ 회신이 저장되었습니다\n참석 전날 배정 좌석을 확인할 수 있습니다.');
   } else {
@@ -923,9 +1007,11 @@ function togAtt(pid, snum, v) {
 }
 
 async function saveAtt() {
-  const a=getAct(); Object.assign(a,tmpAtt);
   showLoading('저장 중…');
-  await setAct(a);
+  // 각 행을 개별 upsert — 동시 저장 충돌 방지
+  for(const [key, val] of Object.entries(tmpAtt)) {
+    if(val !== undefined) await upsertActual(key, val);
+  }
   hideLoading();
   toast('출석 저장 완료 ✓');
 }
@@ -1016,48 +1102,48 @@ function renderSummary() {
 }
 
 async function changePw() {
-  const cur = document.getElementById('pwCur').value.trim();
-  const nw  = document.getElementById('pwNew').value.trim();
-  const cfm = document.getElementById('pwCfm').value.trim();
+  const cur = document.getElementById('pwCur').value;
+  const nw  = document.getElementById('pwNew').value;
+  const cfm = document.getElementById('pwCfm').value;
   const msg = document.getElementById('pwMsg');
+  msg.textContent = '';
 
-  if (nw.length < 4) {
-    msg.style.color = '#c0392b';
-    msg.textContent = '새 비밀번호는 4자리 이상이어야 합니다.';
+  const storedPw = getS().adminPw || '1234';
+
+  if(cur !== storedPw) {
+    msg.style.color='#c0392b';
+    msg.textContent='현재 비밀번호가 올바르지 않습니다.';
+    return;
+  }
+  if(nw.length < 4) {
+    msg.style.color='#c0392b';
+    msg.textContent='새 비밀번호는 4자리 이상이어야 합니다.';
+    return;
+  }
+  if(nw !== cfm) {
+    msg.style.color='#c0392b';
+    msg.textContent='새 비밀번호가 일치하지 않습니다.';
     return;
   }
 
-  if (nw !== cfm) {
-    msg.style.color = '#c0392b';
-    msg.textContent = '새 비밀번호가 일치하지 않습니다.';
-    return;
-  }
-
-  const sessionToken = sessionStorage.getItem('adminSession');
-  if (!sessionToken) {
-    msg.style.color = '#c0392b';
-    msg.textContent = '관리자 세션이 없습니다. 다시 로그인해 주세요.';
-    return;
-  }
-
-  showLoading('저장 중…');
-  const result = await postApi('adminChangePassword', {
-    sessionToken,
-    currentPassword: cur,
-    newPassword: nw
-  });
+  showLoading('비밀번호 저장 중…');
+  // 현재 settings 전체를 유지하면서 adminPw만 교체
+  const newSettings = { ...getS(), adminPw: nw };
+  const result = await setS(newSettings);
   hideLoading();
 
-  if (!result || !result.ok) {
-    msg.style.color = '#c0392b';
-    msg.textContent = result?.error || '비밀번호 변경에 실패했습니다.';
+  if(!isSaveOk(result)) {
+    msg.style.color='#c0392b';
+    msg.textContent='저장에 실패했습니다. 서버 연결을 확인하고 다시 시도해 주세요.';
     return;
   }
 
-  ['pwCur','pwNew','pwCfm'].forEach(id => document.getElementById(id).value = '');
-  msg.style.color = '#2d6a4f';
-  msg.textContent = '✓ 비밀번호가 변경되었습니다.';
-  setTimeout(() => { msg.textContent = ''; }, 3000);
+  // CACHE 즉시 업데이트
+  CACHE.s = newSettings;
+  ['pwCur','pwNew','pwCfm'].forEach(id => document.getElementById(id).value='');
+  msg.style.color='#2d6a4f';
+  msg.textContent='✓ 비밀번호가 변경되었습니다.';
+  setTimeout(()=>{ msg.textContent=''; }, 3000);
   toast('비밀번호 변경 완료 ✓');
 }
 
